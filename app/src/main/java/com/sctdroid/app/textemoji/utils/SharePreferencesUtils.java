@@ -2,6 +2,7 @@ package com.sctdroid.app.textemoji.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 /**
  * Created by lixindong on 4/26/17.
@@ -40,5 +41,19 @@ public class SharePreferencesUtils {
     public static void applyFirstTimeStart(Context context, boolean isFirst) {
         SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         sp.edit().putBoolean(KEY_FIRST_TIME_START, isFirst).apply();
+    }
+
+    public static void apply(Context context, @NonNull String key, int value) {
+        SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        sp.edit().putInt(key, value).apply();
+    }
+
+    public static int getInt(Context context, @NonNull String key) {
+        return getInt(context, key, 0);
+    }
+
+    public static int getInt(Context context, @NonNull String key, int defValue) {
+        SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        return sp.getInt(key, defValue);
     }
 }

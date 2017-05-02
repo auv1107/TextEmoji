@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sctdroid.app.textemoji.views.LinearLayoutCompact xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -92,8 +92,8 @@
         <com.sctdroid.app.textemoji.views.EmojiTager
             android:id="@+id/emoji_tager"
             android:layout_width="match_parent"
-            android:layout_height="256dp"
+            android:layout_height="@dimen/soft_keyboard_default_size"
             android:visibility="gone"/>
     </FrameLayout>
 
-</LinearLayout>
+</com.sctdroid.app.textemoji.views.LinearLayoutCompact>

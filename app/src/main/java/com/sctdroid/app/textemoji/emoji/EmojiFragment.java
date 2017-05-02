@@ -51,6 +51,7 @@ import com.sctdroid.app.textemoji.utils.WeixinShareUtils;
 import com.sctdroid.app.textemoji.utils.compact.Compact;
 import com.sctdroid.app.textemoji.views.EmojiCategoryView;
 import com.sctdroid.app.textemoji.views.EmojiTager;
+import com.sctdroid.app.textemoji.views.LinearLayoutCompact;
 import com.sctdroid.app.textemoji.views.TextEmoji;
 
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private int mMinTextSize;
     private int mDefaultTextSize;
     private int mSpanPerSegment;
+    private int mSoftKeyboardDefaultHeight;
 
     /**
      * option type
@@ -113,7 +115,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_emoji, container, false);
+        LinearLayoutCompact root = (LinearLayoutCompact) inflater.inflate(R.layout.fragment_emoji, container, false);
 
         // do initial things here
         initValues();
@@ -122,6 +124,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         initRecyclerView(root);
         initEvent(root);
         initOptions(root);
+        initImmEvent(root);
 
         mPresenter.create();
 
@@ -134,10 +137,29 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mPresenter.start();
     }
 
+    private void initImmEvent(LinearLayoutCompact root) {
+
+        root.setOnImmStatusChangedListener(new LinearLayoutCompact.OnImmStatusChangedListener() {
+            @Override
+            public void show(int height) {
+                SharePreferencesUtils.apply(getActivity(), Constants.SOFT_KEYBOARD_HEIGHT, height);
+                mEmojiTager.getLayoutParams().height = height;
+                mOptions.getLayoutParams().height = height;
+            }
+
+            @Override
+            public void hidden() {
+
+            }
+        });
+    }
+
     private void initValues() {
         mMinTextSize = getResources().getInteger(R.integer.min_textSize);
         mSpanPerSegment = getResources().getInteger(R.integer.span_per_segment);
         mDefaultTextSize = getResources().getInteger(R.integer.option_default_textSize);
+        mSoftKeyboardDefaultHeight =
+                getActivity().getResources().getDimensionPixelSize(R.dimen.soft_keyboard_default_size);
     }
 
     private void initOptions(View root) {
@@ -158,6 +180,11 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mEmojiPagerAdapter = new EmojiPagerAdapter(getActivity());
         mEmojiTager.setRadioGroupAdapter(mEmojiRadioAdapter);
         mEmojiTager.setViewPagerAdapter(mEmojiPagerAdapter);
+
+        int height = SharePreferencesUtils.getInt(getActivity(),
+                Constants.SOFT_KEYBOARD_HEIGHT, mSoftKeyboardDefaultHeight);
+        mEmojiTager.getLayoutParams().height = height;
+        mOptions.getLayoutParams().height = height;
 
         mEmojiButton = (ImageView) root.findViewById(R.id.emoji_button);
     }

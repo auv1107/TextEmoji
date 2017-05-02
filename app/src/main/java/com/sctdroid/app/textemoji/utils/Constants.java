@@ -40,4 +40,6 @@ public class Constants {
 
     public static final String LABEL_INPUT_SIZE_PREFIX = "LABEL_INPUT_SIZE_PREFIX_";
     public static final String EVENT_INPUT_TEXT = "EVENT_INPUT_TEXT";
+
+    public static final String SOFT_KEYBOARD_HEIGHT = "SOFT_KEYBOARD_HEIGHT";
 }

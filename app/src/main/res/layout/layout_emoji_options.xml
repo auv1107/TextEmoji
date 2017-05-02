@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/options"
     android:layout_width="match_parent"
-    android:layout_height="256dp"
+    android:layout_height="@dimen/soft_keyboard_default_size"
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp"
     app:contentPaddingLeft="16dp"

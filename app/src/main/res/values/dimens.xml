@@ -12,6 +12,7 @@
     <dimen name="logo_width">40dp</dimen>
     <dimen name="developer_avatar_height">72dp</dimen>
     <dimen name="developer_avatar_width">72dp</dimen>
+    <dimen name="soft_keyboard_default_size">256dp</dimen>
     <integer name="option_default_textSize">20</integer>
     <integer name="min_textSize">12</integer>
     <integer name="max_progress">16</integer>
