@@ -12,7 +12,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.utils.DisplayUtils;
 
 /**
@@ -23,7 +23,7 @@ public class TextEmoji extends View {
     public static final int WIDTH = 120;
     public static final int HEIGHT = 120;
     public static final int DEFAULT_TEXT_SIZE = 20;
-    private ChatItem mItem;
+    private TextPicItem mItem;
     private TextPaint mPaint;
     private StaticLayout mStaticLayout;
 
@@ -51,7 +51,7 @@ public class TextEmoji extends View {
         }
     }
 
-    public void setText(ChatItem item) {
+    public void setText(TextPicItem item) {
         mItem = item;
         int textSize = DEFAULT_TEXT_SIZE;
         if (mItem.textSize > 0) {

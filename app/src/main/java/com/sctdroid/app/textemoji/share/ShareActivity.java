@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.sctdroid.app.textemoji.R;
-import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.utils.Constants;
 import com.sctdroid.app.textemoji.utils.SharePreferencesUtils;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
@@ -39,7 +39,7 @@ public class ShareActivity extends AppCompatActivity {
             int textSize = SharePreferencesUtils.textSize(this, getResources().getInteger(R.integer.option_default_textSize));
 
             // prepare to generate data
-            ChatItem item = new ChatItem.Builder()
+            TextPicItem item = new TextPicItem.Builder()
                     .content(text)
                     .textSize(textSize)
                     .withShadow(withShadow)

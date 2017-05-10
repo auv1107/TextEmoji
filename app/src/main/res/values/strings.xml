@@ -27,4 +27,6 @@
     <string name="saved_toast_format">图片已保存至 %s</string>
     <string name="build_emoji_and_share">生成表情并发送</string>
     <string name="start_to_use">开始动手</string>
+    <string name="bitmap_is_empty">没发现图片哦</string>
+    <string name="some_things_wrong"><![CDATA[出错啦!~>_<~]]></string>
 </resources>

@@ -32,6 +32,11 @@ public class TCAgentUtils {
     public static void Share(Context context, String label, @NonNull String text) {
         TCAgent.onEvent(context, Constants.EVENT_SHARE_TO_FRIEND, label, getTextMap(text));
     }
+    public static void ShareGif(Context context, String label, @NonNull String text) {
+        Map<String, String> map = new HashMap<>();
+        map.put("tag", text);
+        TCAgent.onEvent(context, Constants.EVENT_SHARE_GIF_TO_FRIEND, label, map);
+    }
 
     private static Map getTextMap(String text) {
         int length = text.length();
@@ -73,6 +78,15 @@ public class TCAgentUtils {
                 Constants.EVENT_SAVE_TO_GALLERY,
                 withAlpha ? Constants.LABEL_WITH_ALPHA : Constants.LABEL_WITHOUT_ALPHA,
                 getTextMap(text));
+    }
+
+    public static void SaveGifToGallery(Context context, String text) {
+        Map<String, String> map = new HashMap<>();
+        map.put("tag", text);
+        TCAgent.onEvent(context,
+                Constants.EVENT_SAVE_GIF_TO_GALLERY,
+                Constants.LABEL_FROM_EMOJI,
+                map);
     }
 
     public static void UpdateAvatar(Context context, boolean isSuccess) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.sctdroid.app.textemoji.data.ChatItemFactory;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
 import com.sctdroid.app.textemoji.data.source.ChatsDataSource;
 import com.sctdroid.app.textemoji.utils.AssetUtils;
@@ -44,7 +45,7 @@ public class ChatsLocalDataSource implements ChatsDataSource {
             JSONArray array = new JSONArray(data);
             List<ChatItem> result = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
-                ChatItem item = ChatItem.fromJsonObject(array.optJSONObject(i));
+                ChatItem item = ChatItemFactory.fromJsonObject(array.optJSONObject(i));
                 result.add(item);
             }
             return result;
@@ -63,7 +64,7 @@ public class ChatsLocalDataSource implements ChatsDataSource {
         // to JsonArray
         JSONArray array = new JSONArray();
         for (int i = 0; i < items.size(); i++) {
-            JSONObject object = items.get(i).toJsonObject();
+            JSONObject object = ChatItemFactory.toJsonObject(items.get(i));
             array.put(object);
         }
         // to String
@@ -74,7 +75,7 @@ public class ChatsLocalDataSource implements ChatsDataSource {
 
     @Override
     public void appendChat(ChatItem item) {
-        if (ChatItem.NULL.equals(item)) {
+        if (item == null || item.isNull()) {
             return;
         }
         // getChats()

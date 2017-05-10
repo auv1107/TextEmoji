@@ -6,7 +6,9 @@ import android.net.Uri;
 import com.sctdroid.app.textemoji.BasePresenter;
 import com.sctdroid.app.textemoji.BaseView;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
+import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.data.bean.Me;
 
 import java.util.List;
@@ -21,6 +23,10 @@ public class EmojiContract {
         void processInput(String inputText, int textSize, boolean withShadow);
 
         Uri saveBitmap(Bitmap bitmap, String filename, String dirPath);
+
+        void instantGifSearch(String keyword);
+
+        void sendGif(Gif gif, String tag);
     }
     interface View extends BaseView<Presenter> {
 
@@ -35,5 +41,9 @@ public class EmojiContract {
         void scrollToTop();
 
         void initEmojiBoard(List<EmojiCategory> data);
+
+        void showGifs(List<Gif> gifs, String tag);
+
+        void clearGifs();
     }
 }

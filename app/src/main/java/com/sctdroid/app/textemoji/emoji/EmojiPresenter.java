@@ -9,13 +9,19 @@ import android.support.v4.content.Loader;
 import android.text.TextUtils;
 
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.data.bean.GifChatItem;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
+import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.data.bean.Me;
 import com.sctdroid.app.textemoji.data.source.ChatsLoader;
 import com.sctdroid.app.textemoji.data.source.ChatsRepository;
 import com.sctdroid.app.textemoji.data.source.EmojiLoader;
+import com.sctdroid.app.textemoji.data.source.GifRepository;
+import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.MeLoader;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,17 +35,22 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
     private final int CHATS_QUERY = 2;
     private final int ME_QUERY = 3;
     private final int EMOJI_QUERY = 4;
+    private final int Gif_QUERY = 5;
     private final ChatsRepository mRepository;
+    private final GifRepository mGifRepository;
     private final MeLoader mMeLoader;
     private final EmojiLoader mEmojiLoader;
+    private final GifsLoader mGifsLoader;
     private boolean mIsFirstTimeStart = false;
 
-    public EmojiPresenter(EmojiLoader emojiLoader, MeLoader meLoader, ChatsLoader chatsLoader, LoaderManager loaderManager, ChatsRepository repository, @NonNull EmojiContract.View emojiView) {
+    public EmojiPresenter(EmojiLoader emojiLoader, MeLoader meLoader, ChatsLoader chatsLoader, GifsLoader gifsLoader, LoaderManager loaderManager, ChatsRepository repository, GifRepository gifRepository, @NonNull EmojiContract.View emojiView) {
         mEmojiLoader = emojiLoader;
         mMeLoader = meLoader;
         mChatLoader = chatsLoader;
+        mGifsLoader = gifsLoader;
         mLoaderManager = loaderManager;
         mRepository = repository;
+        mGifRepository = gifRepository;
         mEmojiView = emojiView;
         mEmojiView.setPresenter(this);
     }
@@ -62,6 +73,30 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
             }
         }).forceLoad();
+        mLoaderManager.initLoader(Gif_QUERY, null, new LoaderManager.LoaderCallbacks<List<Gif>>() {
+            @Override
+            public Loader<List<Gif>> onCreateLoader(int id, Bundle args) {
+                return mGifsLoader;
+            }
+
+            @Override
+            public void onLoadFinished(Loader<List<Gif>> loader, List<Gif> data) {
+                if (!Collections.EMPTY_LIST.equals(data)) {
+                    String tag = "";
+                    if (mGifsLoader.getQueryFilter() != null) {
+                        tag = mGifsLoader.getQueryFilter().tag;
+                    }
+                    mEmojiView.showGifs(data, tag);
+                } else {
+                    mEmojiView.clearGifs();
+                }
+            }
+
+            @Override
+            public void onLoaderReset(Loader<List<Gif>> loader) {
+
+            }
+        });
     }
 
     @Override
@@ -108,7 +143,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         if (TextUtils.isEmpty(inputText)) {
             mEmojiView.showEmptyText();
         } else {
-            mRepository.appendChat(new ChatItem.Builder()
+            mRepository.appendChat(new TextPicItem.Builder()
                     .content(inputText)
                     .avatarResId(-1)
                     .textSize(textSize)
@@ -126,5 +161,21 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     public void isFirstTime(boolean isFirstTimeStart) {
         mIsFirstTimeStart = isFirstTimeStart;
+    }
+
+    @Override
+    public void instantGifSearch(String keyword) {
+        mGifsLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword));
+        mGifRepository.refreshGifs();
+    }
+
+    @Override
+    public void sendGif(Gif gif, String tag) {
+        mRepository.appendChat(
+                GifChatItem.Builder
+                .newInstance()
+                        .gif(gif)
+                        .tag(tag)
+                        .build());
     }
 }

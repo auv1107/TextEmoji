@@ -4,23 +4,24 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 /**
  * Created by lixindong on 5/2/17.
  */
 
-public class LinearLayoutCompact extends LinearLayout {
+public class RelativeLayoutCompact extends RelativeLayout {
     private OnImmStatusChangedListener listener;
 
-    public LinearLayoutCompact(Context context) {
+    public RelativeLayoutCompact(Context context) {
         super(context);
     }
 
-    public LinearLayoutCompact(Context context, @Nullable AttributeSet attrs) {
+    public RelativeLayoutCompact(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LinearLayoutCompact(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RelativeLayoutCompact(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

@@ -33,11 +33,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
 import com.sctdroid.app.textemoji.data.bean.Emoji;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
+import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.bean.GifChatItem;
 import com.sctdroid.app.textemoji.data.bean.Me;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.Constants;
@@ -51,9 +58,11 @@ import com.sctdroid.app.textemoji.utils.WeixinShareUtils;
 import com.sctdroid.app.textemoji.utils.compact.Compact;
 import com.sctdroid.app.textemoji.views.EmojiCategoryView;
 import com.sctdroid.app.textemoji.views.EmojiTager;
-import com.sctdroid.app.textemoji.views.LinearLayoutCompact;
+import com.sctdroid.app.textemoji.views.RelativeLayoutCompact;
 import com.sctdroid.app.textemoji.views.TextEmoji;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +82,9 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private CardView mOptions;
     private ImageView mEmojiButton;
     private EmojiTager mEmojiTager;
+
+    private ImageView[] mGifs = new ImageView[3];
+
     private EmojiRadioAdapter mEmojiRadioAdapter;
     private EmojiPagerAdapter mEmojiPagerAdapter;
 
@@ -115,7 +127,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        LinearLayoutCompact root = (LinearLayoutCompact) inflater.inflate(R.layout.fragment_emoji, container, false);
+        RelativeLayoutCompact root = (RelativeLayoutCompact) inflater.inflate(R.layout.fragment_emoji, container, false);
 
         // do initial things here
         initValues();
@@ -137,9 +149,9 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mPresenter.start();
     }
 
-    private void initImmEvent(LinearLayoutCompact root) {
+    private void initImmEvent(RelativeLayoutCompact root) {
 
-        root.setOnImmStatusChangedListener(new LinearLayoutCompact.OnImmStatusChangedListener() {
+        root.setOnImmStatusChangedListener(new RelativeLayoutCompact.OnImmStatusChangedListener() {
             @Override
             public void show(int height) {
                 SharePreferencesUtils.apply(getActivity(), Constants.SOFT_KEYBOARD_HEIGHT, height);
@@ -187,6 +199,10 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mOptions.getLayoutParams().height = height;
 
         mEmojiButton = (ImageView) root.findViewById(R.id.emoji_button);
+
+        mGifs[0] = (ImageView) root.findViewById(R.id.gif3);
+        mGifs[1] = (ImageView) root.findViewById(R.id.gif1);
+        mGifs[2] = (ImageView) root.findViewById(R.id.gif2);
     }
 
     private void initEvent(final View root) {
@@ -249,10 +265,14 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                     // hide send button, show switch button
                     sendButton.setVisibility(View.INVISIBLE);
                     switchButton.setVisibility(View.VISIBLE);
+
+                    clearGifs();
                 } else {
                     // hide switch button, show send button
                     sendButton.setVisibility(View.VISIBLE);
                     switchButton.setVisibility(View.INVISIBLE);
+
+                    mPresenter.instantGifSearch(s.toString());
                 }
             }
 
@@ -434,8 +454,59 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
      */
     @Override
     public boolean onContentLongClicked(@NonNull View view,@NonNull Object data) {
-        showShareDialog(view, data);
+        if (view instanceof TextEmoji) {
+            showShareDialog(view, data);
+        }
+        if (view instanceof ImageView
+                && data instanceof GifChatItem) {
+            showShareGifDialog((ImageView) view, (GifChatItem) data);
+        }
         return true;
+    }
+
+    private void showShareGifDialog(@NonNull final ImageView view, @NonNull final GifChatItem chatItem) {
+        AlertDialog shareDialog = new AlertDialog.Builder(getActivity())
+                .setItems(new String[]{
+                        getString(R.string.share_to_wechat_friends_as_emoji),
+                        getString(R.string.save_to_gallery_no_alpha)},
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, final int which) {
+                                Glide.with(getContext())
+                                        .load(chatItem.gif.url)
+                                        .downloadOnly(new SimpleTarget<File>() {
+                                            @Override
+                                            public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
+                                                String dir = "";
+                                                if (which == 0) {
+                                                    dir = StorageHelper.DIR_TMP;
+                                                } else if (which == 1) {
+                                                    dir = StorageHelper.DIR_GALLERY;
+                                                }
+                                                String absolutePath = dir + EncoderUtils.encodeSHA1(System.currentTimeMillis()+"") + ".gif";
+                                                StorageHelper.checkAndMkdir(dir);
+                                                File f = new File(absolutePath);
+                                                try {
+                                                    StorageHelper.copy(resource, f);
+                                                    if (which == 0) {
+                                                        WeixinShareUtils.shareImagePath(absolutePath);
+                                                        TCAgentUtils.ShareGif(getActivity(), Constants.LABEL_FROM_EMOJI, chatItem.tag);
+                                                    } else {
+                                                        ToastUtils.show(getActivity(), getString(R.string.saved_toast_format, absolutePath), Toast.LENGTH_LONG);
+                                                        scanPhoto(absolutePath);
+                                                        TCAgentUtils.SaveGifToGallery(getActivity(), chatItem.tag);
+                                                    }
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                    ToastUtils.show(getContext(), R.string.some_things_wrong, Toast.LENGTH_SHORT);
+                                                }
+                                            }
+                                        });
+                            }
+                        }).create();
+
+        shareDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        shareDialog.show();
     }
 
     private void showShareDialog(@NonNull final View view, @NonNull final Object data) {
@@ -447,27 +518,36 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                         new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (view instanceof TextEmoji && data instanceof ChatItem) {
+                Bitmap bitmap = null;
+                String tag = "";
+                if (view instanceof TextEmoji) {
                     TextEmoji emojiView = (TextEmoji) view;
-                    Bitmap bitmap = emojiView.getBitmap(which == 0 || which == 1);
-                    ChatItem item = (ChatItem) data;
+                    bitmap = emojiView.getBitmap(which == 0 || which == 1);
+                }
+                if (data instanceof TextPicItem) {
+                    TextPicItem item = (TextPicItem) data;
+                    tag = item.content;
+                }
 
-                    if (which == 0) {
-                        // share to friends
-                        WeixinShareUtils.shareImage(bitmap);
-                        TCAgentUtils.Share(getActivity(), Constants.LABEL_FROM_EMOJI, item.content);
-                    } else if (which == 1 || which == 2) {
-                        // savg to gallery
-                        String filename = EncoderUtils.encodeSHA1(item.content + System.currentTimeMillis()) + ".png";
-                        String absolutePath = StorageHelper.DIR_GALLERY + filename;
-                        mPresenter.saveBitmap(bitmap, filename, StorageHelper.DIR_GALLERY);
+                if (bitmap == null) {
+                    ToastUtils.show(getActivity(), R.string.bitmap_is_empty, Toast.LENGTH_SHORT);
+                    return;
+                }
 
-                        // toast for saved path and notify gallery to update
-                        ToastUtils.show(getActivity(), getString(R.string.saved_toast_format, absolutePath), Toast.LENGTH_LONG);
-                        scanPhoto(absolutePath);
+                if (which == 0) {
+                    // share to friends
+                    WeixinShareUtils.shareImage(bitmap);
+                    TCAgentUtils.Share(getActivity(), Constants.LABEL_FROM_EMOJI, tag);
+                } else if (which == 1 || which == 2) {
+                    // savg to gallery
+                    String filename = EncoderUtils.encodeSHA1("" + System.currentTimeMillis()) + ".png";
+                    String absolutePath = StorageHelper.DIR_GALLERY + filename;
+                    mPresenter.saveBitmap(bitmap, filename, StorageHelper.DIR_GALLERY);
+                    // toast for saved path and notify gallery to update
+                    ToastUtils.show(getActivity(), getString(R.string.saved_toast_format, absolutePath), Toast.LENGTH_LONG);
+                    scanPhoto(absolutePath);
 
-                        TCAgentUtils.SaveToGallery(getActivity(), which == 1, item.content);
-                    }
+                    TCAgentUtils.SaveToGallery(getActivity(), which == 1, tag);
                 }
 
             }}).create();
@@ -544,10 +624,38 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
     }
 
+    @Override
+    public void showGifs(@NonNull final List<Gif> gifs, final String tag) {
+        for (int i = 0; i < gifs.size() && i < mGifs.length; i++) {
+            final Gif gif = gifs.get(i);
+            Glide.with(getActivity())
+                    .load(gif.preview)
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(mGifs[i]);
+            mGifs[i].setVisibility(View.VISIBLE);
+            mGifs[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mPresenter.sendGif(gif, tag);
+                    clearEditText();
+                    clearGifs();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void clearGifs() {
+        mGifs[0].setVisibility(View.GONE);
+        mGifs[1].setVisibility(View.GONE);
+        mGifs[2].setVisibility(View.GONE);
+    }
+
     /**
      * Classes for RecyclerView
      */
-    static class DefaultViewHolder extends BaseEmojiViewHolder {
+    private static class DefaultViewHolder extends BaseEmojiViewHolder<TextPicItem> {
         private final TextView item_content;
         private final ImageView item_avatar;
         private final TextEmoji item_text_emoji;
@@ -560,8 +668,8 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
 
         @Override
-        protected void bind(@NonNull final ChatItem item) {
-            if (ChatItem.NULL.equals(item)) {
+        protected void bind(@NonNull final TextPicItem item) {
+            if (TextPicItem.NULL.equals(item)) {
                 return;
             }
             item_content.setText(item.content);
@@ -610,15 +718,83 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         /**
          * tmp method to show profile
          */
+        @Override
         public void bindProfile(Me mMe) {
 //            item_avatar.setImageURI(Uri.fromFile(new File(mMe.getAvatar())));
         }
+
+        @Override
+        public void bindAvatar(Bitmap avatar) {
+            item_avatar.setImageBitmap(avatar);
+        }
+    }
+
+    private static class GifViewHolder extends BaseEmojiViewHolder<GifChatItem> {
+        private ImageView item_gif;
+        private ImageView item_avatar;
+
+        public GifViewHolder(Context context, View itemView) {
+            super(context, itemView);
+            item_avatar = (ImageView) itemView.findViewById(R.id.item_avatar);
+            item_gif = (ImageView) itemView.findViewById(R.id.item_gif);
+            item_gif.setAdjustViewBounds(true);
+        }
+
+        public GifViewHolder(Context context, LayoutInflater inflater, ViewGroup parent) {
+            this(context, inflater.inflate(R.layout.gif_chat_item, parent, false));
+        }
+
+        @Override
+        protected void bind(@NonNull final GifChatItem item) {
+            Glide.with(getContext())
+                    .load(item.gif.preview)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .dontAnimate()
+                    .into(item_gif);
+            Glide.with(getContext())
+                    .load(item.gif.url)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .dontAnimate()
+                    .into(item_gif);
+
+            item_avatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDelegate != null) {
+                        mDelegate.onAvatarClicked(v);
+                    }
+                }
+            });
+
+            item_gif.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDelegate != null) {
+                        mDelegate.onContentLongClicked(v, item);
+                    } else {
+                    }
+                }
+            });
+
+        }
+
+        /**
+         * tmp method to show profile
+         */
+        @Override
+        public void bindProfile(Me mMe) {
+//            item_avatar.setImageURI(Uri.fromFile(new File(mMe.getAvatar())));
+        }
+        @Override
         public void bindAvatar(Bitmap avatar) {
             item_avatar.setImageBitmap(avatar);
         }
     }
 
     static class ContentAdapter extends RecyclerView.Adapter<BaseEmojiViewHolder> {
+        private final int VIEW_TYPE_TEXT_PIC = 0;
+        private final int VIEW_TYPE_GIF = 1;
+
         private final Context mContext;
         private List<ChatItem> mData = new ArrayList<>();
         private final BaseEmojiViewHolder.EventDelegate mDelegate;
@@ -636,21 +812,36 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
 
         @Override
         public BaseEmojiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case VIEW_TYPE_GIF:
+                    return new GifViewHolder(getContext(), LayoutInflater.from(getContext()), parent);
+            }
             return new DefaultViewHolder(getContext(), LayoutInflater.from(getContext()), parent);
         }
 
         @Override
+        public int getItemViewType(int position) {
+            if (getItem(position) instanceof TextPicItem) {
+                return VIEW_TYPE_TEXT_PIC;
+            }
+            if (getItem(position) instanceof GifChatItem) {
+                return VIEW_TYPE_GIF;
+            }
+            return super.getItemViewType(position);
+        }
+
+        @Override
         public void onBindViewHolder(BaseEmojiViewHolder holder, int position) {
-            if (!Me.NULL.equals(mMe) && holder instanceof DefaultViewHolder) {
-                ((DefaultViewHolder) holder).bindProfile(mMe);
-                ((DefaultViewHolder) holder).bindAvatar(mAvatar);
+            if (!Me.NULL.equals(mMe)) {
+                holder.bindProfile(mMe);
+                holder.bindAvatar(mAvatar);
             }
             holder.bind(getItem(position));
             holder.setEventDelegate(mDelegate);
         }
 
         private ChatItem getItem(int position) {
-            return getItemCount() > position ? mData.get(position) : ChatItem.NULL;
+            return getItemCount() > position ? mData.get(position) : null;
         }
 
         @Override
@@ -665,7 +856,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
 
         public void appendData(ChatItem item) {
-            if (!ChatItem.NULL.equals(item)) {
+            if (!TextPicItem.NULL.equals(item)) {
                 mData.add(item);
                 notifyDataSetChanged();
             }

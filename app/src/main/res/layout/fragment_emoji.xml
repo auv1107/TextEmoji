@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sctdroid.app.textemoji.views.LinearLayoutCompact xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sctdroid.app.textemoji.views.RelativeLayoutCompact xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/head_bar" />
+    <include layout="@layout/head_bar"
+        android:id="@+id/head_bar"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_below="@id/head_bar"
+        android:layout_above="@+id/edit_container"
+
         android:background="#ebebeb"
         >
     </android.support.v7.widget.RecyclerView>
 
     <RelativeLayout
+        android:id="@+id/edit_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
+        android:layout_above="@+id/options_container"
 
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
@@ -81,10 +86,61 @@
             />
     </RelativeLayout>
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/gifs_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/edit_container"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="72dp"
+
+        app:cardElevation="5dp"
+        app:cardCornerRadius="5dp"
+        >
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:id="@+id/gif1"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:scaleType="centerCrop"
+                    android:padding="6dp"
+                    android:visibility="gone"
+                    />
+                <ImageView
+                    android:id="@+id/gif2"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:scaleType="centerCrop"
+                    android:padding="6dp"
+                    android:visibility="gone"
+                    />
+                <ImageView
+                    android:id="@+id/gif3"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:scaleType="centerCrop"
+                    android:padding="6dp"
+                    android:visibility="gone"
+                    />
+            </LinearLayout>
+        </HorizontalScrollView>
+    </android.support.v7.widget.CardView>
+
     <FrameLayout
         android:id="@+id/options_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
         >
 
         <include layout="@layout/layout_emoji_options" />
@@ -96,4 +152,4 @@
             android:visibility="gone"/>
     </FrameLayout>
 
-</com.sctdroid.app.textemoji.views.LinearLayoutCompact>
+</com.sctdroid.app.textemoji.views.RelativeLayoutCompact>

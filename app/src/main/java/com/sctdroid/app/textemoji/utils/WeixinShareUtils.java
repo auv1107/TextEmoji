@@ -33,4 +33,22 @@ public class WeixinShareUtils {
         Platform platform = ShareSDK.getPlatform(Wechat.NAME);
         platform.share(shareParams);
     }
+
+    public static void shareImageUrl(String url) {
+        Platform.ShareParams shareParams = new Platform.ShareParams();
+        shareParams.setShareType(Platform.SHARE_EMOJI);
+        shareParams.setImageUrl(url);
+
+        Platform platform = ShareSDK.getPlatform(Wechat.NAME);
+        platform.share(shareParams);
+    }
+
+    public static void shareImagePath(String path) {
+        Platform.ShareParams shareParams = new Platform.ShareParams();
+        shareParams.setShareType(Platform.SHARE_EMOJI);
+        shareParams.setImagePath(path);
+
+        Platform platform = ShareSDK.getPlatform(Wechat.NAME);
+        platform.share(shareParams);
+    }
 }

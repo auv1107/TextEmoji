@@ -42,4 +42,7 @@ public class Constants {
     public static final String EVENT_INPUT_TEXT = "EVENT_INPUT_TEXT";
 
     public static final String SOFT_KEYBOARD_HEIGHT = "SOFT_KEYBOARD_HEIGHT";
+
+    public static final String EVENT_SHARE_GIF_TO_FRIEND = "EVENT_SHARE_GIF_TO_FRIEND";
+    public static final String EVENT_SAVE_GIF_TO_GALLERY = "EVENT_SAVE_GIF_TO_GALLERY";
 }
