@@ -48,6 +48,7 @@ import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.Constants;
+import com.sctdroid.app.textemoji.utils.DisplayUtils;
 import com.sctdroid.app.textemoji.utils.EmojiUtils;
 import com.sctdroid.app.textemoji.utils.EncoderUtils;
 import com.sctdroid.app.textemoji.utils.SharePreferencesUtils;
@@ -157,6 +158,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 SharePreferencesUtils.apply(getActivity(), Constants.SOFT_KEYBOARD_HEIGHT, height);
                 mEmojiTager.getLayoutParams().height = height;
                 mOptions.getLayoutParams().height = height;
+                scrollChatToBottom();
             }
 
             @Override
@@ -384,7 +386,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private void initRecyclerView(View root) {
         mRecyclerView = (RecyclerView) root.findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -747,12 +749,9 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         @Override
         protected void bind(@NonNull final GifChatItem item) {
             Glide.with(getContext())
-                    .load(item.gif.preview)
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .dontAnimate()
-                    .into(item_gif);
-            Glide.with(getContext())
                     .load(item.gif.url)
+                    .placeholder(R.drawable.pic_loading_progress_bar)
+                    .override(DisplayUtils.dp2px(getContext(), 160), Integer.MAX_VALUE)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
                     .into(item_gif);

@@ -29,12 +29,21 @@
 
         tools:text="demo content"
         />
-    <com.sctdroid.app.textemoji.views.TextEmoji
-        android:id="@+id/text_emoji"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/item_avatar"
         android:layout_marginEnd="8dp"
-        />
+        android:layout_toStartOf="@id/item_avatar"
+
+        android:minHeight="100dp"
+        >
+        <com.sctdroid.app.textemoji.views.TextEmoji
+            android:id="@+id/text_emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
 
 </RelativeLayout>

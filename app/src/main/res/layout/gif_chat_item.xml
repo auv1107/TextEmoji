@@ -29,13 +29,21 @@
 
         tools:text="demo content"
         />
-    <ImageView
-        android:id="@+id/item_gif"
+    <FrameLayout
         android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/item_avatar"
         android:layout_marginEnd="8dp"
-        android:scaleType="fitXY"
-        />
+        android:layout_toStartOf="@id/item_avatar"
+
+        android:minHeight="100dp"
+        >
+        <ImageView
+            android:id="@+id/item_gif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
 
 </RelativeLayout>
