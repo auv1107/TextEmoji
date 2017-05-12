@@ -298,6 +298,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                         && event.getAction() == KeyEvent.ACTION_UP && mType == OPTION_TYPE_KEYBOARD) {
                     mTextInputEditText.clearFocus();
                     mType = OPTION_TYPE_NONE;
+                    clearGifs();
                 }
                 return false;
             }
@@ -446,6 +447,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 mEmojiButton.setImageResource(R.drawable.option_keyboard);
                 break;
         }
+        clearGifs();
     }
 
     /**
