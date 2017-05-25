@@ -2,6 +2,7 @@ package com.sctdroid.app.textemoji.discovery;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,11 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.utils.ToastUtils;
+import com.sctdroid.app.textemoji.views.OnItemTouchListener;
+import com.sctdroid.app.textemoji.views.ShareDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +37,8 @@ public class GifFragment extends Fragment implements GifContract.View {
 
     private final static String KEYWORD = "KEYWORD";
     private String mKeyword;
+
+    private ShareDialog mShareDialog;
 
     public static GifFragment newInstance(String keyword) {
 
@@ -50,6 +57,8 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         Bundle bundle = getArguments();
         mKeyword = bundle.getString(KEYWORD);
+
+        mShareDialog = new ShareDialog(getContext());
 
         mPresenter.create();
     }
@@ -86,6 +95,22 @@ public class GifFragment extends Fragment implements GifContract.View {
                 mPresenter.query(mKeyword);
             }
         });
+
+        recyclerView.addOnItemTouchListener(new OnItemTouchListener(recyclerView) {
+            @Override
+            public void onItemClick(RecyclerView.ViewHolder vh) {
+                if (vh instanceof GifViewHolder) {
+                    GifViewHolder viewHolder = (GifViewHolder) vh;
+                    mShareDialog.bind(viewHolder.getGif());
+                    mShareDialog.show();
+                }
+            }
+
+            @Override
+            public void onItemLongClick(RecyclerView.ViewHolder vh) {
+                ToastUtils.show(getActivity(), "onItemLongClick", Toast.LENGTH_SHORT);
+            }
+        });
     }
 
     @Override
@@ -119,6 +144,8 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         private final ImageView item_image;
 
+        private Gif mGif;
+
         public GifViewHolder(View itemView) {
             super(itemView);
             mContext = itemView.getContext();
@@ -132,13 +159,18 @@ public class GifFragment extends Fragment implements GifContract.View {
             return mContext;
         }
 
-        public void bind(Gif gif) {
+        public void bind(@NonNull final Gif gif) {
+            mGif = gif;
             Glide.with(getContext())
                     .load(gif.preview)
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
                     .into(item_image);
+        }
+
+        public Gif getGif() {
+            return mGif;
         }
     }
 

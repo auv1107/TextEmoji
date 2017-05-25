@@ -45,9 +45,4 @@ public class SearchableActivity extends AppCompatActivity {
         GifsLoader loader = new GifsLoader(this, repository);
         GifPresenter presenter = new GifPresenter(fragment, getSupportLoaderManager(), loader, repository);
     }
-
-    private void doMySearch(String query) {
-        ToastUtils.show(this, "doing my search " + query, Toast.LENGTH_SHORT);
-
-    }
 }
