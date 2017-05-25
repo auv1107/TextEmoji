@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sctdroid.app.textemoji.views.SquareCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="7dp"
+    android:layout_margin="15dp"
+    app:cardBackgroundColor="@color/white"
+    >
+
+    <ImageView
+        android:id="@+id/place_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/pic_loading_progress_bar"
+        />
+
+    <ImageView
+        android:id="@+id/item_gif"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        />
+
+</com.sctdroid.app.textemoji.views.SquareCardView>

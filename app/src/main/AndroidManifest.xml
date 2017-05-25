@@ -29,6 +29,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".discovery.SearchableActivity" />
+
         </activity>
         <activity
             android:name=".me.MeActivity"
@@ -38,7 +41,7 @@
             android:parentActivityName=".emoji.EmojiActivity" />
         <activity
             android:name=".share.ShareActivity"
-            android:label="@string/build_emoji_and_share" >
+            android:label="@string/build_emoji_and_share">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -85,10 +88,20 @@
         <activity
             android:name=".discovery.DiscoveryActivity"
             android:label="@string/title_activity_discovery"
-            android:parentActivityName=".emoji.EmojiActivity" >
+            android:parentActivityName=".emoji.EmojiActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sctdroid.app.textemoji.emoji.EmojiActivity" />
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".discovery.SearchableActivity" />
+        </activity>
+        <activity android:name=".discovery.SearchableActivity"
+            android:label="@string/title_activity_search_result">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         </activity>
     </application>
 

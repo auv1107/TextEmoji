@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 public class GifRemoteDataSource implements GifDataSource {
-    private static final String REQUEST_URL = "https://api.tenor.co/v1/search?key=LIVDSRZULELA&limit=10&tag=";
+    private static final String REQUEST_URL = "https://api.tenor.co/v1/search?key=LIVDSRZULELA&limit=20&tag=";
 
     @Override
     public void refreshGifs() {

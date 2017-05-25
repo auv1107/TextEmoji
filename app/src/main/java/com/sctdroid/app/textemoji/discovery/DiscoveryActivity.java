@@ -1,5 +1,9 @@
 package com.sctdroid.app.textemoji.discovery;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,8 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sctdroid.app.textemoji.R;
+import com.sctdroid.app.textemoji.utils.ToastUtils;
 
 public class DiscoveryActivity extends AppCompatActivity {
 
@@ -78,18 +84,10 @@ public class DiscoveryActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_discovery, menu);
 
         final MenuItem item = menu.findItem(R.id.action_search);
+        SearchManager searchManager = (SearchManager) DiscoveryActivity.this.getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
+        ComponentName componentName = new ComponentName(this, SearchableActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
 
         return true;
     }

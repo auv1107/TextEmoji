@@ -93,8 +93,9 @@ public class EmojiActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EmojiActivity.this, DiscoveryActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(EmojiActivity.this, DiscoveryActivity.class);
+                startActivity(intent);*/
+                onSearchRequested();
             }
         });
     }

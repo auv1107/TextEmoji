@@ -36,7 +36,7 @@ public class HttpGetData {
         HttpRequest request = HttpRequest.get(url)
                 .accept("application/json")
                 .connectTimeout(3000)
-                .readTimeout(15000);
+                .readTimeout(10000);
         request.acceptGzipEncoding().uncompress(true);
         try {
             if (request.ok()) {
@@ -77,7 +77,7 @@ public class HttpGetData {
         byte[] result = null;
         HttpRequest request = HttpRequest.get(url)
                 .connectTimeout(3000)
-                .readTimeout(15000);
+                .readTimeout(10000);
         request.acceptGzipEncoding().uncompress(true);
         try {
             if (request.ok()) {

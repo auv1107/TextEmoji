@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
+import android.text.TextUtils;
 
 import com.sctdroid.app.textemoji.data.bean.Gif;
 
@@ -24,7 +25,7 @@ public class GifsLoader extends AsyncTaskLoader<List<Gif>> implements GifReposit
 
     @Override
     public List<Gif> loadInBackground() {
-        if (mQueryFilter != null) {
+        if (mQueryFilter != null && !TextUtils.isEmpty(mQueryFilter.tag)) {
             return mRepository.getGifs(mQueryFilter.tag);
         } else {
             return Collections.emptyList();
