@@ -29,4 +29,7 @@
     <string name="start_to_use">开始动手</string>
     <string name="bitmap_is_empty">没发现图片哦</string>
     <string name="some_things_wrong"><![CDATA[出错啦!~>_<~]]></string>
+    <string name="title_activity_discovery">DiscoveryActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="action_search">输入表情包关键词</string>
 </resources>

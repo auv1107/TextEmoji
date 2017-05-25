@@ -3,7 +3,9 @@ package com.sctdroid.app.textemoji.emoji;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.sctdroid.app.textemoji.R;
@@ -19,6 +21,7 @@ import com.sctdroid.app.textemoji.data.source.local.ChatsLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.EmojiLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.MeLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.remote.GifRemoteDataSource;
+import com.sctdroid.app.textemoji.discovery.DiscoveryActivity;
 import com.sctdroid.app.textemoji.slide.SlidePagerActivity;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
 import com.sctdroid.app.textemoji.utils.Constants;
@@ -81,6 +84,19 @@ public class EmojiActivity extends AppCompatActivity {
         if (isFirstTimeStart) {
             viewPictures();
         }
+
+        initFabAction();
+    }
+
+    private void initFabAction() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EmojiActivity.this, DiscoveryActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private static final ArrayList<Integer> IMAGES = new ArrayList<>();

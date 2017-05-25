@@ -13,8 +13,6 @@
         android:layout_height="match_parent"
         android:layout_below="@id/head_bar"
         android:layout_above="@+id/edit_container"
-
-        android:background="#ebebeb"
         >
     </android.support.v7.widget.RecyclerView>
 
@@ -27,7 +25,7 @@
 
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:background="#f5f5f7"
+        android:background="#fff"
         android:gravity="center_vertical"
         >
         <android.support.design.widget.TextInputEditText

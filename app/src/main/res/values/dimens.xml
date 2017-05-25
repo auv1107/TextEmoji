@@ -17,4 +17,5 @@
     <integer name="min_textSize">12</integer>
     <integer name="max_progress">16</integer>
     <integer name="span_per_segment">3</integer>
+    <dimen name="appbar_padding_top">8dp</dimen>
 </resources>

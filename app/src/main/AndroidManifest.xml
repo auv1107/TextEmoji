@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sctdroid.app.textemoji">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".TextEmojiApplication"
@@ -19,61 +20,76 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.sctdroid.app.textemoji.emoji.EmojiActivity"
+            android:name=".emoji.EmojiActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden|stateAlwaysHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="stateHidden|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.sctdroid.app.textemoji.me.MeActivity"
-            android:parentActivityName=".emoji.EmojiActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name="com.sctdroid.app.textemoji.developer.DeveloperActivity"
-            android:parentActivityName=".emoji.EmojiActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name="com.sctdroid.app.textemoji.share.ShareActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/build_emoji_and_share"
-            >
+        <activity
+            android:name=".me.MeActivity"
+            android:parentActivityName=".emoji.EmojiActivity" />
+        <activity
+            android:name=".developer.DeveloperActivity"
+            android:parentActivityName=".emoji.EmojiActivity" />
+        <activity
+            android:name=".share.ShareActivity"
+            android:label="@string/build_emoji_and_share" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity
             android:name=".wxapi.WXEntryActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:screenOrientation="portrait" />
-        <activity android:name=".slide.SlidePagerActivity"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".slide.SlidePagerActivity"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.sctdroid.app.textemoji.fileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="com.talkingdata.sdk.TDAntiCheatingService"
-            android:process="com.talkingdata.sdk.TDAntiCheatingService">  <!--用户质量评估Service可以配置在主进程或者单独进程-->
+        <service
+            android:name="com.talkingdata.sdk.TDAntiCheatingService"
+            android:process="com.talkingdata.sdk.TDAntiCheatingService"> <!-- 用户质量评估Service可以配置在主进程或者单独进程 -->
             <intent-filter>
                 <action android:name="com.talkingdata.sdk.TDAntiCheatingService" />
             </intent-filter>
         </service>
-        <meta-data android:name="TD_APP_ID" android:value="EFC5499D4B1248E49181590E8A001C24" />
-        <meta-data android:name="TD_CHANNEL_ID" android:value="${Your_channel_id}" />
 
+        <meta-data
+            android:name="TD_APP_ID"
+            android:value="EFC5499D4B1248E49181590E8A001C24" />
+        <meta-data
+            android:name="TD_CHANNEL_ID"
+            android:value="${Your_channel_id}" />
+
+        <activity
+            android:name=".discovery.DiscoveryActivity"
+            android:label="@string/title_activity_discovery"
+            android:parentActivityName=".emoji.EmojiActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sctdroid.app.textemoji.emoji.EmojiActivity" />
+        </activity>
     </application>
 
 </manifest>
