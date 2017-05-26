@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +40,8 @@ public class GifFragment extends Fragment implements GifContract.View {
     private String mKeyword;
 
     private ShareDialog mShareDialog;
+    private View mStateContainer;
+    private TextView mState;
 
     public static GifFragment newInstance(String keyword) {
 
@@ -69,6 +72,7 @@ public class GifFragment extends Fragment implements GifContract.View {
         View root = inflater.inflate(R.layout.fragment_gif, container, false);
 
         initRecyclerView(root);
+        initViews(root);
 
         return root;
     }
@@ -77,8 +81,38 @@ public class GifFragment extends Fragment implements GifContract.View {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        showState(State.STATE_LOADING);
         mSwipeRefreshLayout.setRefreshing(true);
         mPresenter.query(mKeyword);
+    }
+
+    private void showState(State state) {
+        switch (state) {
+            case STATE_SHOW_DATA:
+                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+                mStateContainer.setVisibility(View.GONE);
+                break;
+            case STATE_LOADING:
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mStateContainer.setVisibility(View.VISIBLE);
+                mState.setText(R.string.state_loading);
+                break;
+            case STATE_NO_DATA:
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mStateContainer.setVisibility(View.VISIBLE);
+                mState.setText(R.string.state_no_data);
+                break;
+            case STATE_NETWORK_ERROR:
+                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mStateContainer.setVisibility(View.VISIBLE);
+                mState.setText(R.string.state_network_error);
+                break;
+        }
+    }
+
+    private void initViews(View root) {
+        mStateContainer = root.findViewById(R.id.item_state_container);
+        mState = (TextView) root.findViewById(R.id.item_state);
     }
 
     private void initRecyclerView(View root) {
@@ -132,6 +166,11 @@ public class GifFragment extends Fragment implements GifContract.View {
         mAdapter.updateData(data);
         if (mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);
+        }
+        if (Collections.EMPTY_LIST.equals(data)) {
+            showState(State.STATE_NO_DATA);
+        } else {
+            showState(State.STATE_SHOW_DATA);
         }
     }
 
@@ -208,5 +247,12 @@ public class GifFragment extends Fragment implements GifContract.View {
             }
             notifyDataSetChanged();
         }
+    }
+
+    private enum State {
+        STATE_SHOW_DATA,
+        STATE_LOADING,
+        STATE_NO_DATA,
+        STATE_NETWORK_ERROR
     }
 }
