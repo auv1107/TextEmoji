@@ -87,6 +87,5 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
                 ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.OTHERS);
                 break;
         }
-        dismiss();
     }
 }

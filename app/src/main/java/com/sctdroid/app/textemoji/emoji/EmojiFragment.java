@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,6 +44,7 @@ import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.TextPicShare;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
+import com.sctdroid.app.textemoji.utils.BitmapUtils;
 import com.sctdroid.app.textemoji.utils.Constants;
 import com.sctdroid.app.textemoji.utils.DisplayUtils;
 import com.sctdroid.app.textemoji.utils.EmojiUtils;
@@ -455,7 +455,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     @Override
     public boolean onContentLongClicked(@NonNull View view,@NonNull Object data) {
         if (data instanceof TextPicItem) {
-            Bitmap bitmap = convertViewToBitmap(view);
+            Bitmap bitmap = BitmapUtils.convertViewToBitmap(view);
 
             mShareDialog.bind(new TextPicShare((TextPicItem) data, bitmap));
         }
@@ -465,24 +465,6 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
         mShareDialog.show();
         return true;
-    }
-
-    public static Bitmap convertViewToBitmap(View v){
-        v.setDrawingCacheEnabled(true);
-        Bitmap vBitmap = v.getDrawingCache();
-
-        if (vBitmap == null) {
-            v.setDrawingCacheEnabled(false);
-            Bitmap b = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b);
-            v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
-            v.draw(c);
-            return b;
-        } else {
-            Bitmap bitmap = Bitmap.createBitmap(vBitmap);
-            v.setDrawingCacheEnabled(false);
-            return bitmap;
-        }
     }
 
     @Override

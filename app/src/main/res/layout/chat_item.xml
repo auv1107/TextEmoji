@@ -29,24 +29,6 @@
 
         tools:text="demo content"
         />
-    <FrameLayout
-        android:id="@+id/item_text_container"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_toStartOf="@id/item_avatar"
 
-        android:minHeight="100dp"
-        >
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/black_1"
-            />
-    </FrameLayout>
-
+    <include layout="@layout/layout_text_card" />
 </RelativeLayout>

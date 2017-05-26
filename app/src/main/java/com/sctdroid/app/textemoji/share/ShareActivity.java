@@ -5,15 +5,16 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.sctdroid.app.textemoji.R;
-import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.utils.Constants;
 import com.sctdroid.app.textemoji.utils.SharePreferencesUtils;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
 import com.sctdroid.app.textemoji.utils.WeixinShareUtils;
 import com.sctdroid.app.textemoji.utils.compact.Compact;
-import com.sctdroid.app.textemoji.views.TextEmoji;
 
 import cn.sharesdk.framework.ShareSDK;
 
@@ -35,27 +36,32 @@ public class ShareActivity extends AppCompatActivity {
                 && "text/plain".equals(intent.getType())) {
             String text = intent.getStringExtra(Intent.EXTRA_TEXT);
 
-            boolean withShadow = SharePreferencesUtils.withShadow(this, false);
             int textSize = SharePreferencesUtils.textSize(this, getResources().getInteger(R.integer.option_default_textSize));
 
-            // prepare to generate data
-            TextPicItem item = new TextPicItem.Builder()
-                    .content(text)
-                    .textSize(textSize)
-                    .withShadow(withShadow)
-                    .build();
-            TextEmoji textEmoji = new TextEmoji(this);
-            textEmoji.setText(item);
-
-            // prepare data to share
-            Bitmap bitmap = textEmoji.getBitmap(true);
-
-            // save and share it
-//            Uri uri = StorageHelper.saveBitmap(bitmap, filename, StorageHelper.DIR_TMP);
-            TCAgentUtils.Share(this, Constants.LABEL_FROM_SHARE, item.content);
+            Bitmap bitmap = getShareBitmap(text, textSize);
+            TCAgentUtils.Share(this, Constants.LABEL_FROM_SHARE, text);
             WeixinShareUtils.shareImage(bitmap);
             finish();
         }
+    }
+
+    private Bitmap getShareBitmap(String text, int textSize) {
+        View view = getLayoutInflater().inflate(R.layout.layout_text_card, (ViewGroup) findViewById(android.R.id.content), false);
+        TextView textView = (TextView) view.findViewById(R.id.text);
+        textView.setText(text);
+        textView.setTextSize(textSize);
+
+        view.setDrawingCacheEnabled(true);
+
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        view.buildDrawingCache(true);
+        Bitmap b = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false); // clear drawing cache
+
+        return b;
     }
 
     @Override
