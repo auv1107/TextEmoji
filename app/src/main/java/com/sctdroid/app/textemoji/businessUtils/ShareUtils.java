@@ -1,6 +1,7 @@
 package com.sctdroid.app.textemoji.businessUtils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -25,7 +26,9 @@ import java.io.IOException;
 public class ShareUtils {
     public static void saveAndShare(final Context context, final Shareable shareable, final SharePlatform platform) {
         if (shareable.isBitmap()) {
-            WeixinShareUtils.shareImage(shareable.getBitmap());
+            String name = EncoderUtils.encodeSHA1(System.currentTimeMillis() + "") + ".png";
+            Uri uri = StorageHelper.saveBitmap(shareable.getBitmap(), name, StorageHelper.DIR_TMP);
+            share(context, uri.getPath(), false, platform);
         } else {
             Glide.with(context)
                     .load(shareable.getUrl())
@@ -38,7 +41,7 @@ public class ShareUtils {
                             File f = new File(absolutePath);
                             try {
                                 StorageHelper.copy(resource, f);
-                                share(context, absolutePath, platform);
+                                share(context, absolutePath, false, platform);
                                 TCAgentUtils.ShareGif(context, Constants.LABEL_FROM_EMOJI, shareable.getTag());
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -49,10 +52,10 @@ public class ShareUtils {
         }
     }
 
-    private static void share(Context context, String absolutePath, SharePlatform platform) {
+    private static void share(Context context, String absolutePath, boolean isBitmap, SharePlatform platform) {
         switch (platform) {
             case WECHAT:
-                WeixinShareUtils.shareImageImageToWechat(absolutePath);
+                WeixinShareUtils.shareImageToWechat(absolutePath, isBitmap);
                 break;
             case QQ:
                 WeixinShareUtils.shareImageToQQ(context, absolutePath);

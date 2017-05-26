@@ -1,17 +1,16 @@
 package com.sctdroid.app.textemoji.emoji;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -35,8 +33,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
 import com.sctdroid.app.textemoji.data.bean.Emoji;
@@ -52,21 +48,15 @@ import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.Constants;
 import com.sctdroid.app.textemoji.utils.DisplayUtils;
 import com.sctdroid.app.textemoji.utils.EmojiUtils;
-import com.sctdroid.app.textemoji.utils.EncoderUtils;
 import com.sctdroid.app.textemoji.utils.SharePreferencesUtils;
 import com.sctdroid.app.textemoji.utils.SingleFileScanner;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
-import com.sctdroid.app.textemoji.utils.ToastUtils;
-import com.sctdroid.app.textemoji.utils.WeixinShareUtils;
 import com.sctdroid.app.textemoji.utils.compact.Compact;
 import com.sctdroid.app.textemoji.views.EmojiCategoryView;
 import com.sctdroid.app.textemoji.views.EmojiTager;
 import com.sctdroid.app.textemoji.views.RelativeLayoutCompact;
 import com.sctdroid.app.textemoji.views.ShareDialog;
-import com.sctdroid.app.textemoji.views.TextEmoji;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -464,11 +454,8 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
      */
     @Override
     public boolean onContentLongClicked(@NonNull View view,@NonNull Object data) {
-        if (view instanceof TextEmoji &&
-                data instanceof TextPicItem) {
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-            view.setDrawingCacheEnabled(false);
+        if (data instanceof TextPicItem) {
+            Bitmap bitmap = convertViewToBitmap(view);
 
             mShareDialog.bind(new TextPicShare((TextPicItem) data, bitmap));
         }
@@ -478,6 +465,24 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
         mShareDialog.show();
         return true;
+    }
+
+    public static Bitmap convertViewToBitmap(View v){
+        v.setDrawingCacheEnabled(true);
+        Bitmap vBitmap = v.getDrawingCache();
+
+        if (vBitmap == null) {
+            v.setDrawingCacheEnabled(false);
+            Bitmap b = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+            v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
+            v.draw(c);
+            return b;
+        } else {
+            Bitmap bitmap = Bitmap.createBitmap(vBitmap);
+            v.setDrawingCacheEnabled(false);
+            return bitmap;
+        }
     }
 
     @Override
@@ -584,13 +589,15 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private static class DefaultViewHolder extends BaseEmojiViewHolder<TextPicItem> {
         private final TextView item_content;
         private final ImageView item_avatar;
-        private final TextEmoji item_text_emoji;
+        private final TextView item_text;
+        private final View item_text_container;
 
         public DefaultViewHolder(Context context, LayoutInflater inflater, ViewGroup parent) {
             super(context, inflater.inflate(R.layout.chat_item, parent, false));
             item_content = (TextView) itemView.findViewById(R.id.item_content);
             item_avatar = (ImageView) itemView.findViewById(R.id.item_avatar);
-            item_text_emoji = (TextEmoji) itemView.findViewById(R.id.text_emoji);
+            item_text = (TextView) itemView.findViewById(R.id.text);
+            item_text_container = itemView.findViewById(R.id.item_text_container);
         }
 
         @Override
@@ -601,25 +608,26 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
             item_content.setText(item.content);
             if (item.textSize > 0) {
                 item_content.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.textSize);
+                item_text.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.textSize);
             }
 
-            item_text_emoji.setText(item);
+            item_text.setText(item.content);
 
-            item_text_emoji.setOnClickListener(new View.OnClickListener() {
+            item_text_container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mDelegate != null) {
-                        mDelegate.onContentLongClicked(v, item);
+                        mDelegate.onContentLongClicked(item_text_container, item);
                     } else {
                     }
                 }
             });
 
-            item_text_emoji.setOnLongClickListener(new View.OnLongClickListener() {
+            item_text_container.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     if (mDelegate != null) {
-                        return mDelegate.onContentLongClicked(v, item);
+                        return mDelegate.onContentLongClicked(item_text_container, item);
                     } else {
                         return false;
                     }

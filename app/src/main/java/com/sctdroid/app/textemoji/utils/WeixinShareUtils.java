@@ -47,9 +47,9 @@ public class WeixinShareUtils {
         platform.share(shareParams);
     }
 
-    public static void shareImageImageToWechat(String path) {
+    public static void shareImageToWechat(String path, boolean isBitmap) {
         Platform.ShareParams shareParams = new Platform.ShareParams();
-        shareParams.setShareType(Platform.SHARE_EMOJI);
+        shareParams.setShareType(isBitmap ? Platform.SHARE_IMAGE : Platform.SHARE_EMOJI);
         shareParams.setImagePath(path);
 
         Platform platform = ShareSDK.getPlatform(Wechat.NAME);
