@@ -10,20 +10,21 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sctdroid.app.textemoji.R;
-import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.businessUtils.ShareUtils;
+import com.sctdroid.app.textemoji.data.bean.Shareable;
 
 /**
  * Created by lixindong on 2017/5/26.
  */
 
 public class ShareDialog extends Dialog implements View.OnClickListener {
-    private ImageView mItemGif;
+    private ImageView mItemRaw;
     private ImageView mItemPreview;
     private ImageView mItemPlaceHolder;
     private ImageView mShareWx;
     private ImageView mShareOther;
     private ImageView mShareQQ;
-    private Gif mGif;
+    private Shareable mShareable;
 
     public ShareDialog(@NonNull Context context) {
         super(context);
@@ -34,7 +35,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_share);
 
-        mItemGif = (ImageView) findViewById(R.id.item_gif);
+        mItemRaw = (ImageView) findViewById(R.id.item_raw);
         mItemPlaceHolder = (ImageView) findViewById(R.id.place_holder);
         mItemPreview = (ImageView) findViewById(R.id.item_preview);
         mShareWx = (ImageView) findViewById(R.id.share_wx);
@@ -49,35 +50,43 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
     @Override
     public void show() {
         super.show();
-        if (!Gif.NULL.equals(mGif)) {
+        if (mShareable.isBitmap()) {
+            mItemRaw.setImageBitmap(mShareable.getBitmap());
+            mItemPlaceHolder.setVisibility(View.GONE);
+            mItemPreview.setImageResource(0);
+        } else {
+            mItemPlaceHolder.setVisibility(View.VISIBLE);
             Glide.with(getContext())
-                    .load(mGif.preview)
-                    .centerCrop()
+                    .load(mShareable.getPreview())
+                    .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
                     .into(mItemPreview);
             Glide.with(getContext())
-                    .load(mGif.url)
-                    .centerCrop()
+                    .load(mShareable.getUrl())
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
-                    .into(mItemGif);
+                    .into(mItemRaw);
         }
     }
 
-    public void bind(@NonNull Gif gif) {
-        mGif = gif;
+    public void bind(@NonNull Shareable shareable) {
+        mShareable = shareable;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.share_wx:
+                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.WECHAT);
                 break;
             case R.id.share_qq:
+                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.QQ);
                 break;
             case R.id.share_other:
+                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.OTHERS);
                 break;
         }
+        dismiss();
     }
 }

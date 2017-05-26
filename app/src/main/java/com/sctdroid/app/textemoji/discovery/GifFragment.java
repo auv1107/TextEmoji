@@ -149,7 +149,7 @@ public class GifFragment extends Fragment implements GifContract.View {
         public GifViewHolder(View itemView) {
             super(itemView);
             mContext = itemView.getContext();
-            item_image = (ImageView) itemView.findViewById(R.id.item_gif);
+            item_image = (ImageView) itemView.findViewById(R.id.item_raw);
         }
         public GifViewHolder(LayoutInflater inflater, ViewGroup parent) {
             this(inflater.inflate(R.layout.item_gif_grid, parent, false));
@@ -163,6 +163,7 @@ public class GifFragment extends Fragment implements GifContract.View {
             mGif = gif;
             Glide.with(getContext())
                     .load(gif.preview)
+                    .asBitmap()
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()

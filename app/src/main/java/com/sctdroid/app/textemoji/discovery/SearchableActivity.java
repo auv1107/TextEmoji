@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
-import com.sctdroid.app.textemoji.data.source.remote.GifRemoteDataSource;
+import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
-import com.sctdroid.app.textemoji.utils.ToastUtils;
 
 public class SearchableActivity extends AppCompatActivity {
 
@@ -41,7 +39,7 @@ public class SearchableActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
-        GifRepository repository = GifRepository.getInstance(null, new GifRemoteDataSource());
+        GifRepository repository = GifRepository.getInstance(null, new SooGifRemoteDataSource());
         GifsLoader loader = new GifsLoader(this, repository);
         GifPresenter presenter = new GifPresenter(fragment, getSupportLoaderManager(), loader, repository);
     }

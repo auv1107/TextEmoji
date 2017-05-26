@@ -20,8 +20,7 @@ import com.sctdroid.app.textemoji.data.source.MeRepository;
 import com.sctdroid.app.textemoji.data.source.local.ChatsLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.EmojiLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.MeLocalDataSource;
-import com.sctdroid.app.textemoji.data.source.remote.GifRemoteDataSource;
-import com.sctdroid.app.textemoji.discovery.DiscoveryActivity;
+import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
 import com.sctdroid.app.textemoji.slide.SlidePagerActivity;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
 import com.sctdroid.app.textemoji.utils.Constants;
@@ -76,7 +75,7 @@ public class EmojiActivity extends AppCompatActivity {
         MeLoader meLoader = new MeLoader(this, meRepository);
         EmojiRepository emojiRepository = EmojiRepository.getInstance(new EmojiLocalDataSource(this), null);
         EmojiLoader emojiLoader = new EmojiLoader(this, emojiRepository);
-        GifRepository gifRepository = GifRepository.getInstance(null, new GifRemoteDataSource());
+        GifRepository gifRepository = GifRepository.getInstance(null, new SooGifRemoteDataSource());
         GifsLoader gifsLoader = new GifsLoader(this, gifRepository);
         mEmojiPresenter = new EmojiPresenter(emojiLoader, meLoader, chatsLoader, gifsLoader, getSupportLoaderManager(), repository, gifRepository, mEmojiFragment);
         mEmojiPresenter.isFirstTime(isFirstTimeStart);

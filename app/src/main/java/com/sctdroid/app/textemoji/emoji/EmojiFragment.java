@@ -44,7 +44,9 @@ import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
 import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.data.bean.GifChatItem;
 import com.sctdroid.app.textemoji.data.bean.Me;
+import com.sctdroid.app.textemoji.data.bean.Shareable;
 import com.sctdroid.app.textemoji.data.bean.TextPicItem;
+import com.sctdroid.app.textemoji.data.bean.TextPicShare;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.Constants;
@@ -60,6 +62,7 @@ import com.sctdroid.app.textemoji.utils.compact.Compact;
 import com.sctdroid.app.textemoji.views.EmojiCategoryView;
 import com.sctdroid.app.textemoji.views.EmojiTager;
 import com.sctdroid.app.textemoji.views.RelativeLayoutCompact;
+import com.sctdroid.app.textemoji.views.ShareDialog;
 import com.sctdroid.app.textemoji.views.TextEmoji;
 
 import java.io.File;
@@ -83,6 +86,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private CardView mOptions;
     private ImageView mEmojiButton;
     private EmojiTager mEmojiTager;
+    private ShareDialog mShareDialog;
 
     private ImageView[] mGifs = new ImageView[3];
 
@@ -205,6 +209,8 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mGifs[0] = (ImageView) root.findViewById(R.id.gif3);
         mGifs[1] = (ImageView) root.findViewById(R.id.gif1);
         mGifs[2] = (ImageView) root.findViewById(R.id.gif2);
+
+        mShareDialog = new ShareDialog(getContext());
     }
 
     private void initEvent(final View root) {
@@ -458,105 +464,20 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
      */
     @Override
     public boolean onContentLongClicked(@NonNull View view,@NonNull Object data) {
-        if (view instanceof TextEmoji) {
-            showShareDialog(view, data);
+        if (view instanceof TextEmoji &&
+                data instanceof TextPicItem) {
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+            view.setDrawingCacheEnabled(false);
+
+            mShareDialog.bind(new TextPicShare((TextPicItem) data, bitmap));
         }
         if (view instanceof ImageView
                 && data instanceof GifChatItem) {
-            showShareGifDialog((ImageView) view, (GifChatItem) data);
+            mShareDialog.bind((Shareable) data);
         }
+        mShareDialog.show();
         return true;
-    }
-
-    private void showShareGifDialog(@NonNull final ImageView view, @NonNull final GifChatItem chatItem) {
-        AlertDialog shareDialog = new AlertDialog.Builder(getActivity())
-                .setItems(new String[]{
-                        getString(R.string.share_to_wechat_friends_as_emoji),
-                        getString(R.string.save_to_gallery_no_alpha)},
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, final int which) {
-                                Glide.with(getContext())
-                                        .load(chatItem.gif.url)
-                                        .downloadOnly(new SimpleTarget<File>() {
-                                            @Override
-                                            public void onResourceReady(File resource, GlideAnimation<? super File> glideAnimation) {
-                                                String dir = "";
-                                                if (which == 0) {
-                                                    dir = StorageHelper.DIR_TMP;
-                                                } else if (which == 1) {
-                                                    dir = StorageHelper.DIR_GALLERY;
-                                                }
-                                                String absolutePath = dir + EncoderUtils.encodeSHA1(System.currentTimeMillis()+"") + ".gif";
-                                                StorageHelper.checkAndMkdir(dir);
-                                                File f = new File(absolutePath);
-                                                try {
-                                                    StorageHelper.copy(resource, f);
-                                                    if (which == 0) {
-                                                        WeixinShareUtils.shareImagePath(absolutePath);
-                                                        TCAgentUtils.ShareGif(getActivity(), Constants.LABEL_FROM_EMOJI, chatItem.tag);
-                                                    } else {
-                                                        ToastUtils.show(getActivity(), getString(R.string.saved_toast_format, absolutePath), Toast.LENGTH_LONG);
-                                                        scanPhoto(absolutePath);
-                                                        TCAgentUtils.SaveGifToGallery(getActivity(), chatItem.tag);
-                                                    }
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                    ToastUtils.show(getContext(), R.string.some_things_wrong, Toast.LENGTH_SHORT);
-                                                }
-                                            }
-                                        });
-                            }
-                        }).create();
-
-        shareDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        shareDialog.show();
-    }
-
-    private void showShareDialog(@NonNull final View view, @NonNull final Object data) {
-        AlertDialog shareDialog = new AlertDialog.Builder(getActivity())
-                .setItems(new String[]{
-                        getString(R.string.share_to_wechat_friends_as_emoji),
-                        getString(R.string.save_to_gallery),
-                        getString(R.string.save_to_gallery_no_alpha)},
-                        new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Bitmap bitmap = null;
-                String tag = "";
-                if (view instanceof TextEmoji) {
-                    TextEmoji emojiView = (TextEmoji) view;
-                    bitmap = emojiView.getBitmap(which == 0 || which == 1);
-                }
-                if (data instanceof TextPicItem) {
-                    TextPicItem item = (TextPicItem) data;
-                    tag = item.content;
-                }
-
-                if (bitmap == null) {
-                    ToastUtils.show(getActivity(), R.string.bitmap_is_empty, Toast.LENGTH_SHORT);
-                    return;
-                }
-
-                if (which == 0) {
-                    // share to friends
-                    WeixinShareUtils.shareImage(bitmap);
-                    TCAgentUtils.Share(getActivity(), Constants.LABEL_FROM_EMOJI, tag);
-                } else if (which == 1 || which == 2) {
-                    // savg to gallery
-                    String filename = EncoderUtils.encodeSHA1("" + System.currentTimeMillis()) + ".png";
-                    String absolutePath = StorageHelper.DIR_GALLERY + filename;
-                    mPresenter.saveBitmap(bitmap, filename, StorageHelper.DIR_GALLERY);
-                    // toast for saved path and notify gallery to update
-                    ToastUtils.show(getActivity(), getString(R.string.saved_toast_format, absolutePath), Toast.LENGTH_LONG);
-                    scanPhoto(absolutePath);
-
-                    TCAgentUtils.SaveToGallery(getActivity(), which == 1, tag);
-                }
-
-            }}).create();
-        shareDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        shareDialog.show();
     }
 
     @Override
@@ -634,6 +555,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
             final Gif gif = gifs.get(i);
             Glide.with(getActivity())
                     .load(gif.preview)
+                    .asBitmap()
                     .dontAnimate()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(mGifs[i]);
@@ -740,7 +662,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         public GifViewHolder(Context context, View itemView) {
             super(context, itemView);
             item_avatar = (ImageView) itemView.findViewById(R.id.item_avatar);
-            item_gif = (ImageView) itemView.findViewById(R.id.item_gif);
+            item_gif = (ImageView) itemView.findViewById(R.id.item_raw);
             item_gif.setAdjustViewBounds(true);
         }
 

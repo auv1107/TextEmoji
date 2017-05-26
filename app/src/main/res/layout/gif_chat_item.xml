@@ -38,7 +38,7 @@
         android:minHeight="100dp"
         >
         <ImageView
-            android:id="@+id/item_gif"
+            android:id="@+id/item_raw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerInside"

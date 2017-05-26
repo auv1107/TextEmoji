@@ -1,5 +1,7 @@
 package com.sctdroid.app.textemoji.data.bean;
 
+import android.graphics.Bitmap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,7 +9,7 @@ import org.json.JSONObject;
  * Created by lixindong on 5/11/17.
  */
 
-public class GifChatItem implements ChatItem {
+public class GifChatItem implements ChatItem, Shareable {
     public static final GifChatItem NULL = new GifChatItem(Gif.NULL, "") {
         @Override public boolean equals(Object o) {
             return o == this || o == null; // API specifies this broken equals implementation
@@ -54,6 +56,31 @@ public class GifChatItem implements ChatItem {
                 .gif(gif)
                 .tag(tag)
                 .build();
+    }
+
+    @Override
+    public boolean isBitmap() {
+        return gif.isBitmap();
+    }
+
+    @Override
+    public Bitmap getBitmap() {
+        return gif.getBitmap();
+    }
+
+    @Override
+    public String getUrl() {
+        return gif.getUrl();
+    }
+
+    @Override
+    public String getTag() {
+        return gif.getTag();
+    }
+
+    @Override
+    public String getPreview() {
+        return gif.getPreview();
     }
 
     public static class Builder {
