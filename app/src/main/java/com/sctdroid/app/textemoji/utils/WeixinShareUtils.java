@@ -1,5 +1,6 @@
 package com.sctdroid.app.textemoji.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,11 @@ public class WeixinShareUtils {
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.setType("image/*");
         sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        context.startActivity(sendIntent);
+        try {
+            context.startActivity(sendIntent);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void shareImage(Bitmap bitmap) {
@@ -67,7 +72,11 @@ public class WeixinShareUtils {
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("image/*");
             sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
-            context.startActivity(sendIntent);
+            try {
+                context.startActivity(sendIntent);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -79,7 +88,11 @@ public class WeixinShareUtils {
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("image/*");
             sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
-            context.startActivity(sendIntent);
+            try {
+                context.startActivity(sendIntent);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

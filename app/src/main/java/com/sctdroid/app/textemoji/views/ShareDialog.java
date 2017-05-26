@@ -6,12 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.businessUtils.ShareUtils;
 import com.sctdroid.app.textemoji.data.bean.Shareable;
+import com.sctdroid.app.textemoji.utils.ToastUtils;
 
 /**
  * Created by lixindong on 2017/5/26.
@@ -25,6 +30,8 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
     private ImageView mShareOther;
     private ImageView mShareQQ;
     private Shareable mShareable;
+
+    private boolean mGifReady = false;
 
     public ShareDialog(@NonNull Context context) {
         super(context);
@@ -45,6 +52,8 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         mShareWx.setOnClickListener(this);
         mShareQQ.setOnClickListener(this);
         mShareOther.setOnClickListener(this);
+
+        mGifReady = false;
     }
 
     @Override
@@ -66,7 +75,18 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
                     .load(mShareable.getUrl())
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
-                    .into(mItemRaw);
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            mGifReady = true;
+                            return false;
+                        }
+                    }).into(mItemRaw);
         }
     }
 
@@ -76,6 +96,10 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        if (!mShareable.isBitmap() && !mGifReady) {
+            ToastUtils.show(getContext(), R.string.wait_for_gif_loading, Toast.LENGTH_SHORT);
+            return;
+        }
         switch (v.getId()) {
             case R.id.share_wx:
                 ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.WECHAT);
