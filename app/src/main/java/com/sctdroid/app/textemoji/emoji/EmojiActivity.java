@@ -48,6 +48,7 @@ public class EmojiActivity extends AppCompatActivity {
         ToastUtils.DestoryInstance();
         ShareSDK.stopSDK();
         TCAgentUtils.onPageEnd(this, EmojiActivity.class.getSimpleName());
+        StorageHelper.clearTmp();
     }
 
     @Override
