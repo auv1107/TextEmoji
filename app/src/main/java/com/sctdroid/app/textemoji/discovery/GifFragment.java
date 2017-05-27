@@ -142,7 +142,7 @@ public class GifFragment extends Fragment implements GifContract.View {
 
             @Override
             public void onItemLongClick(RecyclerView.ViewHolder vh) {
-                ToastUtils.show(getActivity(), "onItemLongClick", Toast.LENGTH_SHORT);
+                ToastUtils.show(getActivity(), R.string.no_long_click_action, Toast.LENGTH_SHORT);
             }
         });
     }
