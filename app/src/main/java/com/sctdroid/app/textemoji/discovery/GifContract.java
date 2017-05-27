@@ -15,10 +15,20 @@ public class GifContract {
             extends BasePresenter {
 
         void query(String keyword);
+
+        void queryNext(String mKeyword);
+
+        boolean hasMore();
     }
 
     interface View extends BaseView<Presenter> {
 
         void showGifs(List<Gif> data);
+
+        void showMore(List<Gif> data);
+
+        void showNoMore();
+
+        void showNoData();
     }
 }

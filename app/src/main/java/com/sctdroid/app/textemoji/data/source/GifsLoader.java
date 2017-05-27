@@ -2,20 +2,16 @@ package com.sctdroid.app.textemoji.data.source;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
 
-import com.sctdroid.app.textemoji.data.bean.Gif;
-
-import java.util.Collections;
-import java.util.List;
+import com.sctdroid.app.textemoji.data.bean.GifResponse;
 
 /**
  * Created by lixindong on 5/10/17.
  */
 
-public class GifsLoader extends AsyncTaskLoader<List<Gif>> implements GifRepository.GifRepositoryObserver {
+public class GifsLoader extends AsyncTaskLoader<GifResponse> implements GifRepository.GifRepositoryObserver {
     private final GifRepository mRepository;
 
     public GifsLoader(Context context, @NonNull GifRepository repository) {
@@ -24,11 +20,11 @@ public class GifsLoader extends AsyncTaskLoader<List<Gif>> implements GifReposit
     }
 
     @Override
-    public List<Gif> loadInBackground() {
+    public GifResponse loadInBackground() {
         if (mQueryFilter != null && !TextUtils.isEmpty(mQueryFilter.tag)) {
-            return mRepository.getGifs(mQueryFilter.tag);
+            return mRepository.getGifs(mQueryFilter.tag, mQueryFilter.pageNumber, mQueryFilter.pageSize);
         } else {
-            return Collections.emptyList();
+            return GifResponse.NULL;
         }
     }
 
@@ -57,9 +53,13 @@ public class GifsLoader extends AsyncTaskLoader<List<Gif>> implements GifReposit
 
     public static class QueryFilter {
         public final String tag;
+        public final int pageNumber;
+        public final int pageSize;
 
-        public QueryFilter(String tag) {
+        public QueryFilter(String tag, int pageNumber, int pageSize) {
             this.tag = tag;
+            this.pageNumber = pageNumber;
+            this.pageSize = pageSize;
         }
     }
 

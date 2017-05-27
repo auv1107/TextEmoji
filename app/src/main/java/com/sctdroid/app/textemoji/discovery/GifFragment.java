@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.utils.ToastUtils;
 import com.sctdroid.app.textemoji.views.OnItemTouchListener;
 import com.sctdroid.app.textemoji.views.ShareDialog;
+import com.sctdroid.app.textemoji.views.SwipeLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +36,7 @@ import java.util.List;
 public class GifFragment extends Fragment implements GifContract.View {
     private GifContract.Presenter mPresenter;
     private GifAdapter mAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeLayout mSwipeLayout;
 
     private final static String KEYWORD = "KEYWORD";
     private String mKeyword;
@@ -82,28 +84,28 @@ public class GifFragment extends Fragment implements GifContract.View {
         super.onViewCreated(view, savedInstanceState);
 
         showState(State.STATE_LOADING);
-        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeLayout.setRefreshing(true);
         mPresenter.query(mKeyword);
     }
 
     private void showState(State state) {
         switch (state) {
             case STATE_SHOW_DATA:
-                mSwipeRefreshLayout.setVisibility(View.VISIBLE);
+                mSwipeLayout.setVisibility(View.VISIBLE);
                 mStateContainer.setVisibility(View.GONE);
                 break;
             case STATE_LOADING:
-                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mSwipeLayout.setVisibility(View.GONE);
                 mStateContainer.setVisibility(View.VISIBLE);
                 mState.setText(R.string.state_loading);
                 break;
             case STATE_NO_DATA:
-                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mSwipeLayout.setVisibility(View.GONE);
                 mStateContainer.setVisibility(View.VISIBLE);
                 mState.setText(R.string.state_no_data);
                 break;
             case STATE_NETWORK_ERROR:
-                mSwipeRefreshLayout.setVisibility(View.GONE);
+                mSwipeLayout.setVisibility(View.GONE);
                 mStateContainer.setVisibility(View.VISIBLE);
                 mState.setText(R.string.state_network_error);
                 break;
@@ -116,17 +118,59 @@ public class GifFragment extends Fragment implements GifContract.View {
     }
 
     private void initRecyclerView(View root) {
-        RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_view);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
+        final RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_view);
+        final RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeLayout = (SwipeLayout) root.findViewById(R.id.swipe_refresh_layout);
+        mSwipeLayout.setOnRefreshListener(new SwipeLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mPresenter.query(mKeyword);
+            }
+        });
+
+        mSwipeLayout.setSwipeContent(new SwipeLayout.SwipeContent() {
+            @Override
+            public boolean canLoad() {
+                return mPresenter.hasMore();
+            }
+
+            @Override
+            public boolean isBottom() {
+                int lastPosition = 0;
+                if(layoutManager instanceof GridLayoutManager){
+                    //通过LayoutManager找到当前显示的最后的item的position
+                    lastPosition = ((GridLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+                }else if(layoutManager instanceof LinearLayoutManager){
+                    lastPosition = ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+                }else if(layoutManager instanceof StaggeredGridLayoutManager) {
+                    //因为StaggeredGridLayoutManager的特殊性可能导致最后显示的item存在多个，所以这里取到的是一个数组
+                    //得到这个数组后再取到数组中position值最大的那个就是最后显示的position值了
+                    int[] lastPositions = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
+                    ((StaggeredGridLayoutManager) layoutManager).findLastCompletelyVisibleItemPositions(lastPositions);
+                    lastPosition = findMax(lastPositions);
+                }
+
+                return lastPosition == layoutManager.getItemCount() - 1;
+            }
+
+            private int findMax(int[] set) {
+                int max = set[0];
+                for (int value : set) {
+                    if (value > max) {
+                        max = value;
+                    }
+                }
+                return max;
+            }
+        });
+        mSwipeLayout.setOnLoadListener(new SwipeLayout.OnLoadListener() {
+            @Override
+            public void onLoad() {
+                mPresenter.queryNext(mKeyword);
             }
         });
 
@@ -164,13 +208,37 @@ public class GifFragment extends Fragment implements GifContract.View {
     @Override
     public void showGifs(List<Gif> data) {
         mAdapter.updateData(data);
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
+        if (mSwipeLayout.isRefreshing()) {
+            mSwipeLayout.setRefreshing(false);
         }
         if (Collections.EMPTY_LIST.equals(data)) {
             showState(State.STATE_NO_DATA);
         } else {
             showState(State.STATE_SHOW_DATA);
+        }
+    }
+
+    @Override
+    public void showMore(List<Gif> data) {
+        mAdapter.appendData(data);
+        if (mSwipeLayout.isLoading()) {
+            mSwipeLayout.setLoading(false);
+        }
+    }
+
+    @Override
+    public void showNoMore() {
+        ToastUtils.show(getContext(), R.string.no_more_data, Toast.LENGTH_SHORT);
+        if (mSwipeLayout.isLoading()) {
+            mSwipeLayout.setLoading(false);
+        }
+    }
+
+    @Override
+    public void showNoData() {
+        showState(State.STATE_NO_DATA);
+        if (mSwipeLayout.isRefreshing()) {
+            mSwipeLayout.setRefreshing(false);
         }
     }
 
@@ -242,6 +310,10 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         public void updateData(List<Gif> data) {
             mData.clear();
+            appendData(data);
+        }
+
+        public void appendData(List<Gif> data) {
             if (!Collections.EMPTY_LIST.equals(data)) {
                 mData.addAll(data);
             }

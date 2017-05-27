@@ -27,8 +27,8 @@ public class ShareUtils {
     public static void saveAndShare(final Context context, final Shareable shareable, final SharePlatform platform) {
         if (shareable.isBitmap()) {
             String name = EncoderUtils.encodeSHA1(System.currentTimeMillis() + "") + ".png";
-            Uri uri = StorageHelper.saveBitmap(shareable.getBitmap(), name, StorageHelper.DIR_TMP);
-            share(context, uri.getPath(), false, platform);
+            StorageHelper.saveBitmap(shareable.getBitmap(), name, StorageHelper.DIR_TMP);
+            share(context, StorageHelper.DIR_TMP + name, false, platform);
         } else {
             Glide.with(context)
                     .load(shareable.getUrl())

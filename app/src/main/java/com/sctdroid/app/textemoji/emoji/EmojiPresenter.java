@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
 import com.sctdroid.app.textemoji.data.bean.GifChatItem;
+import com.sctdroid.app.textemoji.data.bean.GifResponse;
 import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
 import com.sctdroid.app.textemoji.data.bean.Gif;
@@ -73,27 +74,27 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
             }
         }).forceLoad();
-        mLoaderManager.initLoader(Gif_QUERY, null, new LoaderManager.LoaderCallbacks<List<Gif>>() {
+        mLoaderManager.initLoader(Gif_QUERY, null, new LoaderManager.LoaderCallbacks<GifResponse>() {
             @Override
-            public Loader<List<Gif>> onCreateLoader(int id, Bundle args) {
+            public Loader<GifResponse> onCreateLoader(int id, Bundle args) {
                 return mGifsLoader;
             }
 
             @Override
-            public void onLoadFinished(Loader<List<Gif>> loader, List<Gif> data) {
+            public void onLoadFinished(Loader<GifResponse> loader, GifResponse data) {
                 if (!Collections.EMPTY_LIST.equals(data)) {
                     String tag = "";
                     if (mGifsLoader.getQueryFilter() != null) {
                         tag = mGifsLoader.getQueryFilter().tag;
                     }
-                    mEmojiView.showGifs(data, tag);
+                    mEmojiView.showGifs(data.getData(), tag);
                 } else {
                     mEmojiView.clearGifs();
                 }
             }
 
             @Override
-            public void onLoaderReset(Loader<List<Gif>> loader) {
+            public void onLoaderReset(Loader<GifResponse> loader) {
 
             }
         });
@@ -165,7 +166,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     @Override
     public void instantGifSearch(String keyword) {
-        mGifsLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword));
+        mGifsLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword, 1, 10));
         mGifRepository.refreshGifs();
     }
 

@@ -1,6 +1,6 @@
 package com.sctdroid.app.textemoji.data.source;
 
-import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.bean.GifResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,13 @@ import java.util.List;
 
 public class GifRepository implements GifDataSource {
     @Override
-    public List<Gif> getGifs(String tag) {
+    public GifResponse getGifs(String tag) {
         return mRemoteDataSource.getGifs(tag);
+    }
+
+    @Override
+    public GifResponse getGifs(String tag, int pageNumber, int pageSize) {
+        return mRemoteDataSource.getGifs(tag, pageNumber, pageSize);
     }
 
     private static GifRepository INSTANCE;

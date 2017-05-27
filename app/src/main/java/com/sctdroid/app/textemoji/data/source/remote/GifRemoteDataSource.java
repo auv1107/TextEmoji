@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.bean.GifResponse;
 import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.utils.network.HttpGetData;
 
@@ -28,14 +29,19 @@ public class GifRemoteDataSource implements GifDataSource {
     }
 
     @Override
-    public List<Gif> getGifs(String tag) {
+    public GifResponse getGifs(String tag) {
         String result = request(tag);
 
         List<Gif> list = Collections.emptyList();
         if (!TextUtils.isEmpty(result)) {
             list = parse(result);
         }
-        return list;
+        return new GifResponse(list, 1, 20, 1, 20);
+    }
+
+    @Override
+    public GifResponse getGifs(String tag, int pageNumber, int pageSize) {
+        return null;
     }
 
     private List<Gif> parse(@NonNull String s) {
