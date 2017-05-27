@@ -1,6 +1,7 @@
 package com.sctdroid.app.textemoji.discovery;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.utils.ToastUtils;
@@ -250,6 +253,7 @@ public class GifFragment extends Fragment implements GifContract.View {
         private final Context mContext;
 
         private final ImageView item_image;
+        private final ImageView placeholder;
 
         private Gif mGif;
 
@@ -257,6 +261,7 @@ public class GifFragment extends Fragment implements GifContract.View {
             super(itemView);
             mContext = itemView.getContext();
             item_image = (ImageView) itemView.findViewById(R.id.item_raw);
+            placeholder = (ImageView) itemView.findViewById(R.id.place_holder);
         }
         public GifViewHolder(LayoutInflater inflater, ViewGroup parent) {
             this(inflater.inflate(R.layout.item_gif_grid, parent, false));
@@ -268,12 +273,25 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         public void bind(@NonNull final Gif gif) {
             mGif = gif;
+            placeholder.setVisibility(View.VISIBLE);
             Glide.with(getContext())
                     .load(gif.preview)
                     .asBitmap()
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .dontAnimate()
+                    .listener(new RequestListener<String, Bitmap>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            placeholder.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
                     .into(item_image);
         }
 

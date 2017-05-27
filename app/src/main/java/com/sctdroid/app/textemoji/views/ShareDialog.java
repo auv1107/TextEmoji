@@ -84,6 +84,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             mGifReady = true;
+                            mItemPlaceHolder.setVisibility(View.GONE);
                             return false;
                         }
                     }).into(mItemRaw);
