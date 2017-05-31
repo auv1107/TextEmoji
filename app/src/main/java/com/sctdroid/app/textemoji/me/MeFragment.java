@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.bean.Me;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
+import com.sctdroid.app.textemoji.utils.ToastUtils;
 
 import java.io.File;
 
@@ -90,8 +92,12 @@ public class MeFragment extends Fragment implements MeContract.View {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_CROP_IMAGE) {
                 Bitmap bitmap = data.getParcelableExtra("data");
-                mAvatar.setImageBitmap(bitmap);
-                mPresenter.updateAvatar(bitmap);
+                if (bitmap != null) {
+                    mAvatar.setImageBitmap(bitmap);
+                    mPresenter.updateAvatar(bitmap);
+                } else {
+                    ToastUtils.show(getContext(), R.string.image_load_failed, Toast.LENGTH_SHORT);
+                }
             }
         }
         TCAgentUtils.UpdateAvatar(getActivity(), resultCode == RESULT_OK);

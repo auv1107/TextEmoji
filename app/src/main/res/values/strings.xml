@@ -40,4 +40,5 @@
     <string name="state_network_error">网络错误</string>
     <string name="no_long_click_action">再喜欢也得不到哦</string>
     <string name="no_more_data">没有更多数据了</string>
+    <string name="image_load_failed">加载图片失败</string>
 </resources>
