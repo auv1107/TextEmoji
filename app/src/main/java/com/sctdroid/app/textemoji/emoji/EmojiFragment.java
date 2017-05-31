@@ -59,6 +59,8 @@ import com.sctdroid.app.textemoji.views.ShareDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by lixindong on 4/18/17.
@@ -263,20 +265,39 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                     // hide send button, show switch button
                     sendButton.setVisibility(View.INVISIBLE);
                     switchButton.setVisibility(View.VISIBLE);
-
-                    clearGifs();
                 } else {
                     // hide switch button, show send button
                     sendButton.setVisibility(View.VISIBLE);
                     switchButton.setVisibility(View.INVISIBLE);
-
-                    mPresenter.instantGifSearch(s.toString());
                 }
+            }
+
+            Timer mTimer = new Timer();
+            private void searchIfInputPaused(final String text) {
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        mPresenter.instantGifSearch(text);
+                    }
+                };
+                cancenTimerTask();
+                mTimer = new Timer();
+                mTimer.schedule(task, 1000);
+            }
+
+            private void cancenTimerTask() {
+                mTimer.cancel();
+                mTimer.purge();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (TextUtils.getTrimmedLength(s.toString()) != 0) {
+                    searchIfInputPaused(s.toString());
+                } else {
+                    clearGifs();
+                    cancenTimerTask();
+                }
             }
         });
         mTextInputEditText.setOnClickListener(new View.OnClickListener() {

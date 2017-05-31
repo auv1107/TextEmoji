@@ -166,8 +166,11 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     @Override
     public void instantGifSearch(String keyword) {
+        if (mGifsLoader.isStarted()) {
+            mGifsLoader.cancelLoad();
+        }
         mGifsLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword, 1, 10));
-        mGifRepository.refreshGifs();
+        mGifsLoader.forceLoad();
     }
 
     @Override
