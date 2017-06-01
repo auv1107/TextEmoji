@@ -12,6 +12,7 @@ import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
+import com.sctdroid.app.textemoji.utils.TCAgentUtils;
 
 public class SearchableActivity extends AppCompatActivity {
 
@@ -19,6 +20,8 @@ public class SearchableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchable);
+
+        TCAgentUtils.onPageStart(this, SearchableActivity.class.getSimpleName());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -38,6 +41,7 @@ public class SearchableActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
+            TCAgentUtils.SearchGif(this, query);
         }
 
         GifFragment fragment = (GifFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -49,5 +53,11 @@ public class SearchableActivity extends AppCompatActivity {
         GifRepository repository = GifRepository.getInstance(null, new SooGifRemoteDataSource());
         GifsLoader loader = new GifsLoader(this, repository);
         GifPresenter presenter = new GifPresenter(fragment, getSupportLoaderManager(), loader, repository);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TCAgentUtils.onPageEnd(this, SearchableActivity.class.getSimpleName());
     }
 }

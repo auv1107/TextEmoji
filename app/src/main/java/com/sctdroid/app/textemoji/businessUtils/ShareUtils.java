@@ -29,6 +29,7 @@ public class ShareUtils {
             String name = EncoderUtils.encodeSHA1(System.currentTimeMillis() + "") + ".png";
             StorageHelper.saveBitmap(shareable.getBitmap(), name, StorageHelper.DIR_TMP);
             share(context, StorageHelper.DIR_TMP + name, false, platform);
+            TCAgentUtils.ShareToChannel(context, platform, true, shareable.getTag());
         } else {
             Glide.with(context)
                     .load(shareable.getUrl())
@@ -43,6 +44,7 @@ public class ShareUtils {
                                 StorageHelper.copy(resource, f);
                                 share(context, absolutePath, false, platform);
                                 TCAgentUtils.ShareGif(context, Constants.LABEL_FROM_EMOJI, shareable.getTag());
+                                TCAgentUtils.ShareToChannel(context, platform, false, shareable.getTag());
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 ToastUtils.show(context, R.string.some_things_wrong, Toast.LENGTH_SHORT);

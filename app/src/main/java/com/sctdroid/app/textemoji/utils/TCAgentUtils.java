@@ -3,6 +3,8 @@ package com.sctdroid.app.textemoji.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.sctdroid.app.textemoji.businessUtils.ShareUtils;
+import com.sctdroid.app.textemoji.discovery.SearchableActivity;
 import com.tendcloud.tenddata.TCAgent;
 
 import java.util.HashMap;
@@ -36,6 +38,14 @@ public class TCAgentUtils {
         Map<String, String> map = new HashMap<>();
         map.put("tag", text);
         TCAgent.onEvent(context, Constants.EVENT_SHARE_GIF_TO_FRIEND, label, map);
+    }
+
+    public static void ShareToChannel(Context context, ShareUtils.SharePlatform platform, boolean isBitmap, String tag) {
+        Map<String, String> map = new HashMap<>();
+        map.put("tag", tag);
+        map.put("platform", platform.name());
+        map.put("isBitmap", "" + isBitmap);
+        TCAgent.onEvent(context, Constants.EVENT_SHARE_PLATFORM, platform.name(), map);
     }
 
     private static Map getTextMap(String text) {
@@ -101,5 +111,9 @@ public class TCAgentUtils {
 
     public static void onPageEnd(Context context, String pageName) {
         TCAgent.onPageStart(context, pageName);
+    }
+
+    public static void SearchGif(Context context, String query) {
+        TCAgent.onEvent(context, Constants.LABEL_SEARCH_GIF, query);
     }
 }

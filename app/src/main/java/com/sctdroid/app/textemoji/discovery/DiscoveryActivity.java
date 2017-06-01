@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sctdroid.app.textemoji.R;
+import com.sctdroid.app.textemoji.utils.TCAgentUtils;
 import com.sctdroid.app.textemoji.utils.ToastUtils;
 
 public class DiscoveryActivity extends AppCompatActivity {
@@ -50,6 +51,8 @@ public class DiscoveryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovery);
+
+        TCAgentUtils.onPageStart(this, DiscoveryActivity.class.getSimpleName());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,6 +80,11 @@ public class DiscoveryActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TCAgentUtils.onPageEnd(this, DiscoveryActivity.class.getSimpleName());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

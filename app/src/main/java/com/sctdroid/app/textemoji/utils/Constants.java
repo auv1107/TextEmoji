@@ -45,4 +45,7 @@ public class Constants {
 
     public static final String EVENT_SHARE_GIF_TO_FRIEND = "EVENT_SHARE_GIF_TO_FRIEND";
     public static final String EVENT_SAVE_GIF_TO_GALLERY = "EVENT_SAVE_GIF_TO_GALLERY";
+
+    public static final String EVENT_SHARE_PLATFORM = "EVENT_SHARE_PLATFORM";
+    public static final String LABEL_SEARCH_GIF = "LABEL_SEARCH_GIF";
 }
