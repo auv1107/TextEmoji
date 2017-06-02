@@ -21,6 +21,7 @@ import com.sctdroid.app.textemoji.data.source.local.ChatsLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.EmojiLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.local.MeLocalDataSource;
 import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
+import com.sctdroid.app.textemoji.data.source.remote.TenorGifRemoteDataSource;
 import com.sctdroid.app.textemoji.slide.SlidePagerActivity;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
 import com.sctdroid.app.textemoji.utils.Constants;

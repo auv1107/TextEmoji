@@ -4,9 +4,15 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
-import com.sctdroid.app.textemoji.data.bean.GifResponse;
+import com.sctdroid.app.textemoji.data.GifResponse;
+import com.sctdroid.app.textemoji.data.QueryFilter;
+import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.request.SooGifQueryFilter;
+import com.sctdroid.app.textemoji.data.request.TenorGifQueryFilter;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
+
+import java.util.List;
 
 /**
  * Created by lixindong on 5/25/17.
@@ -23,9 +29,7 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
     private final int DEFAULT_PAGE_SIZE = 20;
     private final int INITIAL_PAGE = 0;
 
-    private int mCurrentPage = INITIAL_PAGE;
-    private int mAllCount = 0;
-    private int mPageCount = 1;
+    private GifResponse mGifResponse;
 
     public GifPresenter(GifContract.View view, LoaderManager loaderManager, GifsLoader loader, GifRepository repository) {
         mGifView = view;
@@ -48,19 +52,22 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
 
     @Override
     public void query(String keyword) {
-        mGifLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword, INITIAL_PAGE, DEFAULT_PAGE_SIZE));
+        mGifLoader.setQueryFilter(new SooGifQueryFilter(keyword, INITIAL_PAGE, DEFAULT_PAGE_SIZE));
+//        mGifLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "" + DEFAULT_PAGE_SIZE));
         mGifLoader.forceLoad();
     }
 
     @Override
     public void queryNext(String keyword) {
-        mGifLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword, mCurrentPage + 1, DEFAULT_PAGE_SIZE));
-        mGifLoader.forceLoad();
+        if (mGifResponse != null) {
+            mGifLoader.setQueryFilter(mGifResponse.buildLoadMoreQueryFilter());
+            mGifLoader.forceLoad();
+        }
     }
 
     @Override
     public boolean hasMore() {
-        return mCurrentPage < mPageCount;
+        return mGifResponse != null && mGifResponse.hasMore();
     }
 
     @Override
@@ -69,20 +76,18 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
     }
 
     @Override
-    public void onLoadFinished(Loader<GifResponse> loader, GifResponse data) {
-        mCurrentPage = data.getPageNumber();
-        mAllCount = data.getAllCount();
-        mPageCount = data.getPageCount();
+    public void onLoadFinished(Loader<GifResponse> loader, GifResponse response) {
+        mGifResponse = response;
 
-        if (data.getPageNumber() > 1) {
-            if (data.getData().size() > 0) {
-                mGifView.showMore(data.getData());
+        if (!response.isNewest()) {
+            if (response.getData().size() > 0) {
+                mGifView.showMore(response.getData());
             } else {
                 mGifView.showNoMore();
             }
         } else {
-            if (data.getData().size() > 0) {
-                mGifView.showGifs(data.getData());
+            if (response.getData().size() > 0) {
+                mGifView.showGifs(response.getData());
             } else {
                 mGifView.showNoData();
             }

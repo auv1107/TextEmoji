@@ -11,6 +11,7 @@ import com.sctdroid.app.textemoji.R;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
+import com.sctdroid.app.textemoji.data.source.remote.TenorGifRemoteDataSource;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
 

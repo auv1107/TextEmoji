@@ -8,13 +8,15 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
 
+import com.sctdroid.app.textemoji.data.GifResponse;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
-import com.sctdroid.app.textemoji.data.bean.GifChatItem;
-import com.sctdroid.app.textemoji.data.bean.GifResponse;
-import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
 import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.bean.GifChatItem;
 import com.sctdroid.app.textemoji.data.bean.Me;
+import com.sctdroid.app.textemoji.data.bean.TextPicItem;
+import com.sctdroid.app.textemoji.data.request.SooGifQueryFilter;
+import com.sctdroid.app.textemoji.data.request.TenorGifQueryFilter;
 import com.sctdroid.app.textemoji.data.source.ChatsLoader;
 import com.sctdroid.app.textemoji.data.source.ChatsRepository;
 import com.sctdroid.app.textemoji.data.source.EmojiLoader;
@@ -22,7 +24,6 @@ import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.MeLoader;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -82,12 +83,8 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
             @Override
             public void onLoadFinished(Loader<GifResponse> loader, GifResponse data) {
-                if (!Collections.EMPTY_LIST.equals(data)) {
-                    String tag = "";
-                    if (mGifsLoader.getQueryFilter() != null) {
-                        tag = mGifsLoader.getQueryFilter().tag;
-                    }
-                    mEmojiView.showGifs(data.getData(), tag);
+                if (data.getData().size() > 0) {
+                    mEmojiView.showGifs(data.getData(), "");
                 } else {
                     mEmojiView.clearGifs();
                 }
@@ -169,7 +166,8 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         if (mGifsLoader.isStarted()) {
             mGifsLoader.cancelLoad();
         }
-        mGifsLoader.setQueryFilter(new GifsLoader.QueryFilter(keyword, 1, 10));
+//        mGifsLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "3"));
+        mGifsLoader.setQueryFilter(new SooGifQueryFilter(keyword, 0, 3));
         mGifsLoader.forceLoad();
     }
 

@@ -2,8 +2,9 @@ package com.sctdroid.app.textemoji.data.source.remote;
 
 import android.text.TextUtils;
 
+import com.sctdroid.app.textemoji.data.QueryFilter;
 import com.sctdroid.app.textemoji.data.bean.Gif;
-import com.sctdroid.app.textemoji.data.bean.GifResponse;
+import com.sctdroid.app.textemoji.data.response.SooGifResponse;
 import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.utils.EncoderUtils;
 import com.sctdroid.app.textemoji.utils.network.HttpGetData;
@@ -25,16 +26,34 @@ public class SooGifRemoteDataSource implements GifDataSource {
     private static final String SCOPE = "zimo";
     private static final String SALT = "5cb470314206c227b56091a399f871df";
 
+    public static final String KEY_TAG = "text";
+    public static final String KEY_PAGE_NUMBER = "pageNumber";
+    public static final String KEY_PAGE_SIZE = "pageSize";
+
     @Override
-    public GifResponse getGifs(String tag) {
+    public SooGifResponse getGifs(String tag) {
         return getGifs(tag, 0, 20);
     }
 
     @Override
-    public GifResponse getGifs(String tag, int pageNumber, int pageSize) {
+    public SooGifResponse getGifs(QueryFilter filter) {
+        if (filter == null) {
+            return SooGifResponse.NULL;
+        }
+        String text = filter.get(KEY_TAG);
+        String pageNumber = filter.get(KEY_PAGE_NUMBER);
+        String pageSize = filter.get(KEY_PAGE_SIZE);
+
+        SooGifResponse response = getGifs(text, pageNumber, pageSize);
+        response.setQueryFilter(filter);
+
+        return response;
+    }
+
+    private SooGifResponse getGifs(String tag, String pageNumber, String pageSize) {
         String result = request(tag, pageNumber, pageSize);
 
-        GifResponse response = GifResponse.NULL;
+        SooGifResponse response = SooGifResponse.NULL;
         if (!TextUtils.isEmpty(result)) {
             response = parse(result);
         }
@@ -42,8 +61,13 @@ public class SooGifRemoteDataSource implements GifDataSource {
         return response;
     }
 
-    private GifResponse parse(String result) {
-        GifResponse response = GifResponse.NULL;
+    @Override
+    public SooGifResponse getGifs(String tag, int pageNumber, int pageSize) {
+        return getGifs(tag, "" + pageNumber, "" + pageSize);
+    }
+
+    private SooGifResponse parse(String result) {
+        SooGifResponse response = SooGifResponse.NULL;
         int pageNumber = 0;
         int pageSize = 0;
         int pageCount = 0;
@@ -65,7 +89,7 @@ public class SooGifRemoteDataSource implements GifDataSource {
                         allCount = pagination.getInt("allCount");
                     }
 
-                    response = new GifResponse(images, pageNumber, pageSize, pageCount, allCount);
+                    response = new SooGifResponse(images, pageNumber, pageSize, pageCount, allCount);
                 }
             }
         } catch (JSONException e) {
@@ -104,11 +128,7 @@ public class SooGifRemoteDataSource implements GifDataSource {
 
     }
 
-    private String request(String text) {
-        return request(text, 0, 20);
-    }
-
-    private String request(String text, int pageNumber, int pageSize) {
+    private String request(String text, String pageNumber, String pageSize) {
         String timestamp = System.currentTimeMillis() + "";
         String sign = EncoderUtils.encodeMD5(text + SCOPE + timestamp + SALT);
 
@@ -116,9 +136,16 @@ public class SooGifRemoteDataSource implements GifDataSource {
                 + "?text=" + text
                 + "&scope=" + SCOPE
                 + "&timestamp=" + timestamp
-                + "&sign=" + sign
-                + "&pageNumber=" + pageNumber
-                + "&pageSize=" + pageSize;
+                + "&sign=" + sign;
+
+        if (!TextUtils.isEmpty(pageNumber)) {
+            url += "&pageNumber=" + pageNumber;
+        }
+
+        if (!TextUtils.isEmpty(pageSize)) {
+            url += "&pageSize=" + pageSize;
+        }
+
         return HttpGetData.requestGet(url);
     }
 }
