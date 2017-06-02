@@ -13,6 +13,7 @@ import com.sctdroid.app.textemoji.data.source.ChatsLoader;
 import com.sctdroid.app.textemoji.data.source.ChatsRepository;
 import com.sctdroid.app.textemoji.data.source.EmojiLoader;
 import com.sctdroid.app.textemoji.data.source.EmojiRepository;
+import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.MeLoader;
@@ -34,13 +35,18 @@ import java.util.ArrayList;
 
 import cn.sharesdk.framework.ShareSDK;
 
+import static com.sctdroid.app.textemoji.utils.Constants.GIF_SORUCE_SOOGIF;
+import static com.sctdroid.app.textemoji.utils.Constants.GIF_SORUCE_TENOR;
+import static com.sctdroid.app.textemoji.utils.Constants.KEY_GIF_SORUCE;
+
 /**
  * Created by lixindong on 4/18/17.
  */
 
-public class EmojiActivity extends AppCompatActivity {
+public class EmojiActivity extends AppCompatActivity implements EmojiContract.ContractManager {
     private EmojiFragment mEmojiFragment;
     private EmojiPresenter mEmojiPresenter;
+    private GifRepository mGifRepository;
 
     @Override
     protected void onDestroy() {
@@ -77,9 +83,17 @@ public class EmojiActivity extends AppCompatActivity {
         MeLoader meLoader = new MeLoader(this, meRepository);
         EmojiRepository emojiRepository = EmojiRepository.getInstance(new EmojiLocalDataSource(this), null);
         EmojiLoader emojiLoader = new EmojiLoader(this, emojiRepository);
-        GifRepository gifRepository = GifRepository.getInstance(null, new SooGifRemoteDataSource(this));
-        GifsLoader gifsLoader = new GifsLoader(this, gifRepository);
-        mEmojiPresenter = new EmojiPresenter(emojiLoader, meLoader, chatsLoader, gifsLoader, getSupportLoaderManager(), repository, gifRepository, mEmojiFragment);
+
+        int source = SharePreferencesUtils.getInt(this, KEY_GIF_SORUCE);
+        GifDataSource dataSource = null;
+        if (source == 0) {
+            dataSource = new SooGifRemoteDataSource(this);
+        } else {
+            dataSource = new TenorGifRemoteDataSource(this);
+        }
+        mGifRepository = GifRepository.getInstance(null, dataSource);
+        GifsLoader gifsLoader = new GifsLoader(this, mGifRepository);
+        mEmojiPresenter = new EmojiPresenter(emojiLoader, meLoader, chatsLoader, gifsLoader, getSupportLoaderManager(), repository, mGifRepository, mEmojiFragment, this);
         mEmojiPresenter.isFirstTime(isFirstTimeStart);
 
         if (isFirstTimeStart) {
@@ -141,5 +155,17 @@ public class EmojiActivity extends AppCompatActivity {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void useGifDataSource(int source) {
+        GifDataSource dataSource = null;
+        if (source == 0) {
+            dataSource = new SooGifRemoteDataSource(this);
+        } else {
+            dataSource = new TenorGifRemoteDataSource(this);
+        }
+        SharePreferencesUtils.apply(this, KEY_GIF_SORUCE, source);
+        mGifRepository.updateRemoteDataSource(dataSource);
     }
 }

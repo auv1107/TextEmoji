@@ -50,17 +50,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
 
-                android:text="@string/text_shadow"
+                android:text="@string/gif_source"
                 android:textColor="@color/black_1"
                 android:textSize="20sp"
                 />
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/shadow_switch"
+            <Spinner
+                android:id="@+id/gif_source_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                app:switchMinWidth="60dp"
+                android:layout_centerVertical="true"
                 />
         </RelativeLayout>
     </LinearLayout>

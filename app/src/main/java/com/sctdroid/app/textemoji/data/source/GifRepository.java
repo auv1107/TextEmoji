@@ -27,8 +27,8 @@ public class GifRepository implements GifDataSource {
     }
 
     private static GifRepository INSTANCE;
-    private final GifDataSource mLocalDataSource;
-    private final GifDataSource mRemoteDataSource;
+    private GifDataSource mLocalDataSource;
+    private GifDataSource mRemoteDataSource;
 
     private List<GifRepository.GifRepositoryObserver> mObservers = new ArrayList<>();
 
@@ -48,6 +48,10 @@ public class GifRepository implements GifDataSource {
                             GifDataSource remoteDataSource) {
         mLocalDataSource = localDataSource;
         mRemoteDataSource = remoteDataSource;
+    }
+
+    public void updateRemoteDataSource(GifDataSource dataSource) {
+        mRemoteDataSource = dataSource;
     }
 
     public void addContentObserver(GifRepositoryObserver observer) {

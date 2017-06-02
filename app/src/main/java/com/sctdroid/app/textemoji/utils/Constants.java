@@ -48,4 +48,9 @@ public class Constants {
 
     public static final String EVENT_SHARE_PLATFORM = "EVENT_SHARE_PLATFORM";
     public static final String LABEL_SEARCH_GIF = "LABEL_SEARCH_GIF";
+
+    // config key
+    public static final String KEY_GIF_SORUCE = "KEY_GIF_SORUCE";
+    public static final int GIF_SORUCE_SOOGIF = 0;
+    public static final int GIF_SORUCE_TENOR = 1;
 }

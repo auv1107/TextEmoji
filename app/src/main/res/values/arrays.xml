@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gif_source_array">
+        <item>Soogif (国内)</item>
+        <item>Tenor (国外)</item>
+    </string-array>
+</resources>

@@ -11,8 +11,7 @@ import com.sctdroid.app.textemoji.data.request.SooGifQueryFilter;
 import com.sctdroid.app.textemoji.data.request.TenorGifQueryFilter;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
-
-import java.util.List;
+import com.sctdroid.app.textemoji.utils.Constants;
 
 /**
  * Created by lixindong on 5/25/17.
@@ -52,8 +51,11 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
 
     @Override
     public void query(String keyword) {
-        mGifLoader.setQueryFilter(new SooGifQueryFilter(keyword, INITIAL_PAGE, DEFAULT_PAGE_SIZE));
-//        mGifLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "" + DEFAULT_PAGE_SIZE));
+        if (mGifSource == Constants.GIF_SORUCE_SOOGIF) {
+            mGifLoader.setQueryFilter(new SooGifQueryFilter(keyword, INITIAL_PAGE, DEFAULT_PAGE_SIZE));
+        } else {
+            mGifLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "" + DEFAULT_PAGE_SIZE));
+        }
         mGifLoader.forceLoad();
     }
 
@@ -97,5 +99,10 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
     @Override
     public void onLoaderReset(Loader<GifResponse> loader) {
 
+    }
+
+    private int mGifSource = 0;
+    public void setGifSource(int source) {
+        mGifSource = source;
     }
 }

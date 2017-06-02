@@ -24,9 +24,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ import com.sctdroid.app.textemoji.data.bean.Me;
 import com.sctdroid.app.textemoji.data.bean.Shareable;
 import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.TextPicShare;
+import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.BitmapUtils;
@@ -62,6 +66,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.sctdroid.app.textemoji.utils.Constants.KEY_GIF_SORUCE;
+
 /**
  * Created by lixindong on 4/18/17.
  */
@@ -79,6 +85,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private ImageView mEmojiButton;
     private EmojiTager mEmojiTager;
     private ShareDialog mShareDialog;
+    private Spinner mGifSourceSpinner;
 
     private ImageView[] mGifs = new ImageView[3];
 
@@ -176,11 +183,14 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mWithShadow = SharePreferencesUtils.withShadow(getActivity(), false);
         mTextSize = SharePreferencesUtils.textSize(getActivity(), mDefaultTextSize);
 
-        SwitchCompat switchCompat = (SwitchCompat) root.findViewById(R.id.shadow_switch);
-        switchCompat.setChecked(mWithShadow);
-
         SeekBar seekBar = (SeekBar) root.findViewById(R.id.text_size);
         seekBar.setProgress((mTextSize - mMinTextSize) / mSpanPerSegment);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.gif_source_array, android.R.layout.simple_spinner_dropdown_item);
+        mGifSourceSpinner.setAdapter(adapter);
+
+        int source = SharePreferencesUtils.getInt(getContext(), KEY_GIF_SORUCE);
+        mGifSourceSpinner.setSelection(source);
     }
 
     private void initViews(View root) {
@@ -203,6 +213,8 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mGifs[2] = (ImageView) root.findViewById(R.id.gif2);
 
         mShareDialog = new ShareDialog(getContext());
+
+        mGifSourceSpinner = (Spinner) root.findViewById(R.id.gif_source_spinner);
     }
 
     private void initEvent(final View root) {
@@ -353,17 +365,6 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
             }
         });
 
-        SwitchCompat switchCompat = (SwitchCompat) root.findViewById(R.id.shadow_switch);
-        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mWithShadow = isChecked;
-
-                SharePreferencesUtils.applyWithShadow(getActivity(), mWithShadow);
-                TCAgentUtils.SwitchShadow(getActivity(), mWithShadow);
-            }
-        });
-
         // enter me
         ImageView rightOption = (ImageView) root.findViewById(R.id.right_option);
         rightOption.setOnClickListener(new View.OnClickListener() {
@@ -397,6 +398,18 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                     }
                     editable.delete(index - length, index);
                 }
+            }
+        });
+
+        mGifSourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mPresenter.useGifSource(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }

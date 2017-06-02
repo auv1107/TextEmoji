@@ -27,6 +27,8 @@ public class EmojiContract {
         void instantGifSearch(String keyword);
 
         void sendGif(Gif gif, String tag);
+
+        void useGifSource(int position);
     }
     interface View extends BaseView<Presenter> {
 
@@ -45,5 +47,10 @@ public class EmojiContract {
         void showGifs(List<Gif> gifs, String tag);
 
         void clearGifs();
+    }
+    interface ContractManager {
+
+        void useGifDataSource(int position);
+
     }
 }

@@ -40,12 +40,13 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
     private final int Gif_QUERY = 5;
     private final ChatsRepository mRepository;
     private final GifRepository mGifRepository;
+    private final EmojiContract.ContractManager mContractManager;
     private final MeLoader mMeLoader;
     private final EmojiLoader mEmojiLoader;
     private final GifsLoader mGifsLoader;
     private boolean mIsFirstTimeStart = false;
 
-    public EmojiPresenter(EmojiLoader emojiLoader, MeLoader meLoader, ChatsLoader chatsLoader, GifsLoader gifsLoader, LoaderManager loaderManager, ChatsRepository repository, GifRepository gifRepository, @NonNull EmojiContract.View emojiView) {
+    public EmojiPresenter(EmojiLoader emojiLoader, MeLoader meLoader, ChatsLoader chatsLoader, GifsLoader gifsLoader, LoaderManager loaderManager, ChatsRepository repository, GifRepository gifRepository, @NonNull EmojiContract.View emojiView, EmojiContract.ContractManager manager) {
         mEmojiLoader = emojiLoader;
         mMeLoader = meLoader;
         mChatLoader = chatsLoader;
@@ -53,6 +54,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         mLoaderManager = loaderManager;
         mRepository = repository;
         mGifRepository = gifRepository;
+        mContractManager = manager;
         mEmojiView = emojiView;
         mEmojiView.setPresenter(this);
     }
@@ -166,8 +168,11 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         if (mGifsLoader.isStarted()) {
             mGifsLoader.cancelLoad();
         }
-//        mGifsLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "3"));
-        mGifsLoader.setQueryFilter(new SooGifQueryFilter(keyword, 0, 3));
+        if (mGifSource == 0) {
+            mGifsLoader.setQueryFilter(new SooGifQueryFilter(keyword, 0, 3));
+        } else {
+            mGifsLoader.setQueryFilter(new TenorGifQueryFilter(keyword, "", "3"));
+        }
         mGifsLoader.forceLoad();
     }
 
@@ -179,5 +184,13 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
                         .gif(gif)
                         .tag(tag)
                         .build());
+    }
+
+    private int mGifSource = 0;
+
+    @Override
+    public void useGifSource(int source) {
+        mContractManager.useGifDataSource(source);
+        mGifSource = source;
     }
 }

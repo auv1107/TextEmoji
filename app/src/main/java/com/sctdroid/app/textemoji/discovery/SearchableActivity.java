@@ -8,12 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.sctdroid.app.textemoji.R;
+import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.remote.SooGifRemoteDataSource;
 import com.sctdroid.app.textemoji.data.source.remote.TenorGifRemoteDataSource;
 import com.sctdroid.app.textemoji.utils.ActivityUtils;
+import com.sctdroid.app.textemoji.utils.SharePreferencesUtils;
 import com.sctdroid.app.textemoji.utils.TCAgentUtils;
+
+import static com.sctdroid.app.textemoji.utils.Constants.KEY_GIF_SORUCE;
 
 public class SearchableActivity extends AppCompatActivity {
 
@@ -51,9 +55,17 @@ public class SearchableActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
-        GifRepository repository = GifRepository.getInstance(null, new SooGifRemoteDataSource(this));
+        int source = SharePreferencesUtils.getInt(this, KEY_GIF_SORUCE);
+        GifDataSource dataSource = null;
+        if (source == 0) {
+            dataSource = new SooGifRemoteDataSource(this);
+        } else {
+            dataSource = new TenorGifRemoteDataSource(this);
+        }
+        GifRepository repository = GifRepository.getInstance(null, dataSource);
         GifsLoader loader = new GifsLoader(this, repository);
         GifPresenter presenter = new GifPresenter(fragment, getSupportLoaderManager(), loader, repository);
+        presenter.setGifSource(source);
     }
 
     @Override
