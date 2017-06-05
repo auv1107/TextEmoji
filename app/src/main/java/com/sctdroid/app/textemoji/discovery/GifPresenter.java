@@ -5,8 +5,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
 import com.sctdroid.app.textemoji.data.GifResponse;
-import com.sctdroid.app.textemoji.data.QueryFilter;
-import com.sctdroid.app.textemoji.data.bean.Gif;
 import com.sctdroid.app.textemoji.data.request.SooGifQueryFilter;
 import com.sctdroid.app.textemoji.data.request.TenorGifQueryFilter;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
@@ -42,6 +40,11 @@ public class GifPresenter implements GifContract.Presenter, LoaderManager.Loader
     @Override
     public void create() {
         mLoaderManager.initLoader(QUERY_GIF, null, this);
+    }
+
+    @Override
+    public void afterViewInited() {
+        mGifView.updateGifSource(mGifSource);
     }
 
     @Override

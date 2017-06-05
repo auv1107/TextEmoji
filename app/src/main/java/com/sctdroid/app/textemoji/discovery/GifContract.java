@@ -19,6 +19,9 @@ public class GifContract {
         void queryNext(String mKeyword);
 
         boolean hasMore();
+
+        void afterViewInited();
+
     }
 
     interface View extends BaseView<Presenter> {
@@ -30,5 +33,7 @@ public class GifContract {
         void showNoMore();
 
         void showNoData();
+
+        void updateGifSource(int source);
     }
 }

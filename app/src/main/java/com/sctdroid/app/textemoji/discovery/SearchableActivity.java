@@ -64,6 +64,10 @@ public class SearchableActivity extends AppCompatActivity {
         GifsLoader loader = new GifsLoader(this, repository);
         GifPresenter presenter = new GifPresenter(fragment, getSupportLoaderManager(), loader, repository);
         presenter.setGifSource(source);
+
+        int source_id = source == 0 ? R.string.source_soogif : R.string.source_tenor;
+        String subtitle = getString(R.string.format_search, getString(source_id), query);
+        toolbar.setSubtitle(subtitle);
     }
 
     @Override

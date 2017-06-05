@@ -47,6 +47,7 @@ public class GifFragment extends Fragment implements GifContract.View {
     private ShareDialog mShareDialog;
     private View mStateContainer;
     private TextView mState;
+    private TextView mItemGifSupport;
 
     public static GifFragment newInstance(String keyword) {
 
@@ -88,6 +89,7 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         showState(State.STATE_LOADING);
         mSwipeLayout.setRefreshing(true);
+        mPresenter.afterViewInited();
         mPresenter.query(mKeyword);
     }
 
@@ -118,6 +120,7 @@ public class GifFragment extends Fragment implements GifContract.View {
     private void initViews(View root) {
         mStateContainer = root.findViewById(R.id.item_state_container);
         mState = (TextView) root.findViewById(R.id.item_state);
+        mItemGifSupport = (TextView) root.findViewById(R.id.item_gif_support);
     }
 
     private void initRecyclerView(View root) {
@@ -242,6 +245,15 @@ public class GifFragment extends Fragment implements GifContract.View {
         showState(State.STATE_NO_DATA);
         if (mSwipeLayout.isRefreshing()) {
             mSwipeLayout.setRefreshing(false);
+        }
+    }
+
+    @Override
+    public void updateGifSource(int source) {
+        int source_id = source == 0 ? R.string.source_soogif : R.string.source_tenor;
+        String str = getString(R.string.gif_support, getString(source_id));
+        if (mItemGifSupport != null) {
+            mItemGifSupport.setText(str);
         }
     }
 

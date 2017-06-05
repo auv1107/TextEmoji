@@ -38,13 +38,13 @@
             android:text="@string/state_loading"
             />
         <TextView
+            android:id="@+id/item_gif_support"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
 
             android:textSize="12sp"
             android:textColor="#66999999"
-            android:text="@string/gif_support"
             />
     </LinearLayout>
 

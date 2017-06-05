@@ -48,6 +48,7 @@
             android:gravity="center_vertical"
             >
             <TextView
+                android:id="@+id/option_gif_source"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -55,6 +56,17 @@
                 android:text="@string/gif_source"
                 android:textColor="@color/black_1"
                 android:textSize="20sp"
+                />
+            <ImageView
+                android:id="@+id/ic_info"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_toEndOf="@id/option_gif_source"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="3dp"
+
+                android:padding="6dp"
+                android:src="@drawable/ic_info"
                 />
             <Spinner
                 android:id="@+id/gif_source_spinner"
