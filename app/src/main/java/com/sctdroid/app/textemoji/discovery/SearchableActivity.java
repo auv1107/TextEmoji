@@ -26,8 +26,6 @@ public class SearchableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchable);
 
-        TCAgentUtils.onPageStart(this, SearchableActivity.class.getSimpleName());
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -69,8 +67,14 @@ public class SearchableActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        TCAgentUtils.onPageStart(this, SearchableActivity.class.getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         TCAgentUtils.onPageEnd(this, SearchableActivity.class.getSimpleName());
     }
 }

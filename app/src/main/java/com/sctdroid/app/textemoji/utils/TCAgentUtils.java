@@ -110,7 +110,7 @@ public class TCAgentUtils {
     }
 
     public static void onPageEnd(Context context, String pageName) {
-        TCAgent.onPageStart(context, pageName);
+        TCAgent.onPageEnd(context, pageName);
     }
 
     public static void SearchGif(Context context, String query) {

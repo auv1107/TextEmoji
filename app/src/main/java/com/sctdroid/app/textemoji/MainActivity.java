@@ -54,13 +54,17 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             mTabLayout.getTabAt(i).setCustomView(mAdapter.getTabView(i));
         }
         mTabLayout.addOnTabSelectedListener(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         TCAgentUtils.onPageStart(this, MainActivity.class.getSimpleName());
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         TCAgentUtils.onPageEnd(this, MainActivity.class.getSimpleName());
     }
 

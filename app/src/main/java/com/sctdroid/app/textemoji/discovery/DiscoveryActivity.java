@@ -52,8 +52,6 @@ public class DiscoveryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovery);
 
-        TCAgentUtils.onPageStart(this, DiscoveryActivity.class.getSimpleName());
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,8 +79,14 @@ public class DiscoveryActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        TCAgentUtils.onPageStart(this, DiscoveryActivity.class.getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         TCAgentUtils.onPageEnd(this, DiscoveryActivity.class.getSimpleName());
     }
 

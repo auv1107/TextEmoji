@@ -23,12 +23,17 @@ public class DeveloperActivity extends AppCompatActivity {
             fragment = DeveloperFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
-        TCAgentUtils.onPageStart(this, DeveloperActivity.class.getSimpleName());
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         TCAgentUtils.onPageEnd(this, DeveloperActivity.class.getSimpleName());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TCAgentUtils.onPageStart(this, DeveloperActivity.class.getSimpleName());
     }
 }

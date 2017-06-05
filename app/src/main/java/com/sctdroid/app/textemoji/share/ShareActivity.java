@@ -29,7 +29,6 @@ public class ShareActivity extends AppCompatActivity {
 
         Compact.getInstance().init(this);
         ShareSDK.initSDK(this, Constants.SHARE_SDK_APPID);
-        TCAgentUtils.onPageStart(this, ShareActivity.class.getSimpleName());
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())
@@ -43,6 +42,18 @@ public class ShareActivity extends AppCompatActivity {
             WeixinShareUtils.shareImage(bitmap);
             finish();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TCAgentUtils.onPageStart(this, ShareActivity.class.getSimpleName());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        TCAgentUtils.onPageEnd(this, ShareActivity.class.getSimpleName());
     }
 
     private Bitmap getShareBitmap(String text, int textSize) {
@@ -69,6 +80,5 @@ public class ShareActivity extends AppCompatActivity {
         super.onDestroy();
         Compact.DestoryInstance();
         ShareSDK.stopSDK();
-        TCAgentUtils.onPageEnd(this, ShareActivity.class.getSimpleName());
     }
 }

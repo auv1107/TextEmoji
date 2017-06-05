@@ -17,8 +17,8 @@ import com.sctdroid.app.textemoji.utils.TCAgentUtils;
 
 public class MeActivity extends AppCompatActivity {
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         TCAgentUtils.onPageEnd(this, MeActivity.class.getSimpleName());
     }
 
@@ -36,8 +36,11 @@ public class MeActivity extends AppCompatActivity {
         MeRepository repository = MeRepository.getInstance(new MeLocalDataSource(this), null);
         MeLoader loader = new MeLoader(this, repository);
         MeContract.Presenter presenter = new MePresenter(loader, getSupportLoaderManager(), repository, fragment);
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
         TCAgentUtils.onPageStart(this, MeActivity.class.getSimpleName());
     }
 }

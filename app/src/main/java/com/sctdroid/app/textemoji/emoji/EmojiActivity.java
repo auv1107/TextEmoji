@@ -54,8 +54,19 @@ public class EmojiActivity extends AppCompatActivity implements EmojiContract.Co
         Compact.DestoryInstance();
         ToastUtils.DestoryInstance();
         ShareSDK.stopSDK();
-        TCAgentUtils.onPageEnd(this, EmojiActivity.class.getSimpleName());
         StorageHelper.clearTmp();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        TCAgentUtils.onPageEnd(this, EmojiActivity.class.getSimpleName());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TCAgentUtils.onPageStart(this, EmojiActivity.class.getSimpleName());
     }
 
     @Override
@@ -65,7 +76,6 @@ public class EmojiActivity extends AppCompatActivity implements EmojiContract.Co
 
         Compact.getInstance().init(this);
         ShareSDK.initSDK(this, Constants.SHARE_SDK_APPID);
-        TCAgentUtils.onPageStart(this, EmojiActivity.class.getSimpleName());
 
         boolean isFirstTimeStart = SharePreferencesUtils.isFirstTimeStart(this);
         SharePreferencesUtils.applyFirstTimeStart(this, false);
