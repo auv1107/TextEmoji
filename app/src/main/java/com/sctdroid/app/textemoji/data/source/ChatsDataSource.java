@@ -12,4 +12,5 @@ public interface ChatsDataSource {
     List<ChatItem> getChats();
     void saveChats(List<ChatItem> items);
     void appendChat(ChatItem item);
+    void removeChat(int position);
 }

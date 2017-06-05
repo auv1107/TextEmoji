@@ -88,4 +88,14 @@ public class ChatsLocalDataSource implements ChatsDataSource {
         // save items
         saveChats(items);
     }
+
+    @Override
+    public void removeChat(int position) {
+        // getChats()
+        List<ChatItem> items = getChats();
+        if (items.size() > position) {
+            items.remove(position);
+        }
+        saveChats(items);
+    }
 }

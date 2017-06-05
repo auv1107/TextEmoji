@@ -35,8 +35,6 @@ import java.util.ArrayList;
 
 import cn.sharesdk.framework.ShareSDK;
 
-import static com.sctdroid.app.textemoji.utils.Constants.GIF_SORUCE_SOOGIF;
-import static com.sctdroid.app.textemoji.utils.Constants.GIF_SORUCE_TENOR;
 import static com.sctdroid.app.textemoji.utils.Constants.KEY_GIF_SORUCE;
 
 /**

@@ -34,7 +34,8 @@ public abstract class BaseEmojiViewHolder<T extends ChatItem> extends RecyclerVi
     }
 
     public interface EventDelegate {
-        boolean onContentLongClicked(View view, Object data);
+        boolean onContentLongClicked(View view, Object data, int position);
+        boolean onContentClicked(View view, Object data, int position);
         boolean onAvatarClicked(View view);
     }
 

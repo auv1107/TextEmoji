@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.sctdroid.app.textemoji.data.GifResponse;
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
@@ -23,6 +24,7 @@ import com.sctdroid.app.textemoji.data.source.EmojiLoader;
 import com.sctdroid.app.textemoji.data.source.GifRepository;
 import com.sctdroid.app.textemoji.data.source.GifsLoader;
 import com.sctdroid.app.textemoji.data.source.MeLoader;
+import com.sctdroid.app.textemoji.utils.ObservableLoader;
 
 import java.util.List;
 
@@ -85,7 +87,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
             @Override
             public void onLoadFinished(Loader<GifResponse> loader, GifResponse data) {
-                if (data.getData().size() > 0) {
+                if (data != null && data.getData().size() > 0) {
                     mEmojiView.showGifs(data.getData(), "");
                 } else {
                     mEmojiView.clearGifs();
@@ -101,6 +103,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     @Override
     public void start() {
+        mChatLoader.addObserver(mOnLoadCompleteListener);
         mLoaderManager.initLoader(CHATS_QUERY, null, this).forceLoad();
         mLoaderManager.initLoader(ME_QUERY, null, new LoaderManager.LoaderCallbacks<Me>() {
             @Override
@@ -127,9 +130,11 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader<List<ChatItem>> loader, List<ChatItem> data) {
+        Log.i("loaderlifecircle", "onLoadFinished");
         mEmojiView.showChats(data);
         if (mIsFirstTimeStart) {
             mEmojiView.scrollToTop();
+            mIsFirstTimeStart = false;
         }
     }
 
@@ -143,6 +148,8 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         if (TextUtils.isEmpty(inputText)) {
             mEmojiView.showEmptyText();
         } else {
+            mChatLoader.addObserver(mOnLoadCompleteListener);
+
             mRepository.appendChat(new TextPicItem.Builder()
                     .content(inputText)
                     .avatarResId(-1)
@@ -151,7 +158,25 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
                     .build());
             mEmojiView.clearEditText();
         }
+    }
 
+    private ObservableLoader.LoaderObserver<List<ChatItem>> mOnLoadCompleteListener = new ObservableLoader.LoaderObserver<List<ChatItem>>() {
+        @Override
+        public void onLoadCompleted(Loader<List<ChatItem>> loader, List<ChatItem> data) {
+            Log.i("loaderlifecircle", "onLoadComplete");
+            mChatLoader.removeObserver(this);
+            mEmojiView.scrollToBottom();
+        }
+
+        @Override
+        public void onLoadCancelled(Loader<List<ChatItem>> loader) {
+
+        }
+    };
+
+    @Override
+    public void removeChat(int position) {
+        mRepository.removeChat(position);
     }
 
     @Override
@@ -178,6 +203,7 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
 
     @Override
     public void sendGif(Gif gif, String tag) {
+        mChatLoader.addObserver(mOnLoadCompleteListener);
         mRepository.appendChat(
                 GifChatItem.Builder
                 .newInstance()

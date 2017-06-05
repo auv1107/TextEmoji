@@ -50,6 +50,12 @@ public class ChatsRepository implements ChatsDataSource {
         notifyContentObserver();
     }
 
+    @Override
+    public void removeChat(int position) {
+        mLocalDataSource.removeChat(position);
+        notifyContentObserver();
+    }
+
     public void addContentObserver(ChatsRepositoryObserver observer) {
         if (!mObservers.contains(observer)) {
             mObservers.add(observer);

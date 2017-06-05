@@ -29,6 +29,9 @@ public class EmojiContract {
         void sendGif(Gif gif, String tag);
 
         void useGifSource(int position);
+
+        void removeChat(int position);
+
     }
     interface View extends BaseView<Presenter> {
 
@@ -41,6 +44,8 @@ public class EmojiContract {
         void updateMe(Me me);
 
         void scrollToTop();
+
+        void scrollToBottom();
 
         void initEmojiBoard(List<EmojiCategory> data);
 

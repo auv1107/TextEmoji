@@ -1,6 +1,7 @@
 package com.sctdroid.app.textemoji.emoji;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,10 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -23,10 +24,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -45,7 +46,6 @@ import com.sctdroid.app.textemoji.data.bean.Me;
 import com.sctdroid.app.textemoji.data.bean.Shareable;
 import com.sctdroid.app.textemoji.data.bean.TextPicItem;
 import com.sctdroid.app.textemoji.data.bean.TextPicShare;
-import com.sctdroid.app.textemoji.data.source.GifDataSource;
 import com.sctdroid.app.textemoji.developer.DeveloperActivity;
 import com.sctdroid.app.textemoji.me.MeActivity;
 import com.sctdroid.app.textemoji.utils.BitmapUtils;
@@ -161,7 +161,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 SharePreferencesUtils.apply(getActivity(), Constants.SOFT_KEYBOARD_HEIGHT, height);
                 mEmojiTager.getLayoutParams().height = height;
                 mOptions.getLayoutParams().height = height;
-                scrollChatToBottom();
+                scrollToBottom();
             }
 
             @Override
@@ -262,7 +262,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                         optionShowType(OPTION_TYPE_KEYBOARD);
                     }
                 }
-                scrollChatToBottom();
+                scrollToBottom();
             }
         });
         mTextInputEditText.addTextChangedListener(new TextWatcher() {
@@ -430,10 +430,6 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         left_option.setVisibility(View.GONE);
     }
 
-    private void scrollChatToBottom() {
-        mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
-    }
-
     private void optionShowType(int type) {
         mType = type;
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -487,7 +483,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
      * @return
      */
     @Override
-    public boolean onContentLongClicked(@NonNull View view,@NonNull Object data) {
+    public boolean onContentClicked(@NonNull View view,@NonNull Object data, int position) {
         if (data instanceof TextPicItem) {
             Bitmap bitmap = BitmapUtils.convertViewToBitmap(view);
 
@@ -499,6 +495,21 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
         mShareDialog.show();
         return true;
+    }
+
+    @Override
+    public boolean onContentLongClicked(View view, Object data, final int position) {
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setItems(new String[]{"删除表情"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mPresenter.removeChat(position);
+                    }
+                }).create();
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.show();
+
+        return false;
     }
 
     @Override
@@ -530,12 +541,16 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     @Override
     public void showChats(List<ChatItem> data) {
         mAdapter.updateData(data);
-        scrollChatToBottom();
     }
 
     @Override
     public void scrollToTop() {
         mRecyclerView.scrollToPosition(0);
+    }
+
+    @Override
+    public void scrollToBottom() {
+        mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
     }
 
     @Override
@@ -633,7 +648,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 @Override
                 public void onClick(View v) {
                     if (mDelegate != null) {
-                        mDelegate.onContentLongClicked(item_text_container, item);
+                        mDelegate.onContentClicked(item_text_container, item, getAdapterPosition());
                     } else {
                     }
                 }
@@ -643,7 +658,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 @Override
                 public boolean onLongClick(View v) {
                     if (mDelegate != null) {
-                        return mDelegate.onContentLongClicked(item_text_container, item);
+                        return mDelegate.onContentLongClicked(item_text_container, item, getAdapterPosition());
                     } else {
                         return false;
                     }
@@ -717,9 +732,15 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 @Override
                 public void onClick(View v) {
                     if (mDelegate != null) {
-                        mDelegate.onContentLongClicked(v, item);
-                    } else {
+                        mDelegate.onContentClicked(v, item, getAdapterPosition());
                     }
+                }
+            });
+
+            item_gif.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return mDelegate != null && mDelegate.onContentLongClicked(v, item, getAdapterPosition());
                 }
             });
 

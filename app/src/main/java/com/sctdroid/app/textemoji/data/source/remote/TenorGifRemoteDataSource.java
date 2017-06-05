@@ -143,6 +143,9 @@ public class TenorGifRemoteDataSource implements GifDataSource {
     }
 
     private String request(String tag, String pos, String limit) {
+        if (TextUtils.isEmpty(tag)) {
+            return "";
+        }
         String url = REQUEST_URL
                 + "?tag=" + URLEncoder.encode(tag)
                 + "&key=" + KEY

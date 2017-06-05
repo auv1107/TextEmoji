@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.utils.ObservableLoader;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by lixindong on 4/14/17.
  */
 
-public class ChatsLoader extends AsyncTaskLoader<List<ChatItem>> implements ChatsRepository.ChatsRepositoryObserver {
+public class ChatsLoader extends ObservableLoader<List<ChatItem>> implements ChatsRepository.ChatsRepositoryObserver {
     private final ChatsRepository mRepository;
 
     public ChatsLoader(Context context, @NonNull ChatsRepository repository) {
