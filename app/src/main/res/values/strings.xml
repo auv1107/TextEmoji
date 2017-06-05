@@ -42,4 +42,9 @@
     <string name="no_more_data">没有更多数据了</string>
     <string name="image_load_failed">加载图片失败</string>
     <string name="gif_source">动图库</string>
+    <string name="about_gif_source">关于动图库</string>
+    <string name="about_gif_source_content">Soogif (国内):\n国内领先的优质动图整合平台。国内服务器，访问速度快、资源质量优秀。\n\nTenor (国外):\n国外优质的动图资源渠道。国外服务器，30+ 语言支持，资源数量庞大。\n支持 emoji 相似表情检索。</string>
+    <string name="format_search" formatted="false">在 %s 搜索 %s</string>
+    <string name="source_soogif">Soogif (国内)</string>
+    <string name="source_tenor">Tenor (国外)</string>
 </resources>

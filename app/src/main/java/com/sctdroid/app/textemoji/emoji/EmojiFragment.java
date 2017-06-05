@@ -72,7 +72,7 @@ import static com.sctdroid.app.textemoji.utils.Constants.KEY_GIF_SORUCE;
  * Created by lixindong on 4/18/17.
  */
 
-public class EmojiFragment extends Fragment implements EmojiContract.View, BaseEmojiViewHolder.EventDelegate {
+public class EmojiFragment extends Fragment implements EmojiContract.View, BaseEmojiViewHolder.EventDelegate, View.OnClickListener {
     private ContentAdapter mAdapter;
     private EmojiContract.Presenter mPresenter;
 
@@ -412,6 +412,33 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
 
             }
         });
+
+        ImageView ic_info = (ImageView) root.findViewById(R.id.ic_info);
+        ic_info.setOnClickListener(this);
+    }
+
+    private void showGifSourceInfo() {
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.about_gif_source)
+                .setMessage(R.string.about_gif_source_content)
+                .setIcon(R.drawable.ic_gif)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ic_info:
+                showGifSourceInfo();
+                break;
+        }
     }
 
     private void initRecyclerView(View root) {
