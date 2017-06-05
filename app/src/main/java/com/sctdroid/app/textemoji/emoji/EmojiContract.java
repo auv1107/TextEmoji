@@ -32,6 +32,8 @@ public class EmojiContract {
 
         void removeChat(int position);
 
+        void startSearch(String text);
+
     }
     interface View extends BaseView<Presenter> {
 
@@ -52,10 +54,15 @@ public class EmojiContract {
         void showGifs(List<Gif> gifs, String tag);
 
         void clearGifs();
+
+        void showUseTenorSourceDialog();
+
     }
     interface ContractManager {
 
         void useGifDataSource(int position);
+
+        void startSearch(String text);
 
     }
 }

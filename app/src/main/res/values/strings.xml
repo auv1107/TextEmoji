@@ -47,4 +47,7 @@
     <string name="format_search" formatted="false">在 %s 搜索 %s</string>
     <string name="source_soogif">Soogif (国内)</string>
     <string name="source_tenor">Tenor (国外)</string>
+    <string name="search_emoji" formatted="false">找找和 %s 相似的动图</string>
+    <string name="use_tenor_source">切换到 Tenor 动图库 ?</string>
+    <string name="use_tenor_source_info">Tenor 是国外的动图提供商。提供 30+ 语言支持，资源数量庞大。\n支持 emoji 相似表情检索。</string>
 </resources>

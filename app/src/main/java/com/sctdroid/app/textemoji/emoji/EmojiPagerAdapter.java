@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.sctdroid.app.textemoji.data.bean.Emoji;
 import com.sctdroid.app.textemoji.data.bean.EmojiCategory;
@@ -25,6 +26,7 @@ public class EmojiPagerAdapter extends PagerAdapter {
     private List<EmojiCategory> mData = new ArrayList<>();
     private Map<String, EmojiCategoryView> mCachedView = new HashMap<>();
     private EmojiCategoryView.ContentAdapter.OnItemClickListener mOnItemClickListener;
+    private EmojiCategoryView.ContentAdapter.OnItemLongClickListener mOnItemLongClickListener;
     private View.OnClickListener mOnDeleteClickListener;
 
     public EmojiPagerAdapter(Context context) {
@@ -51,6 +53,7 @@ public class EmojiPagerAdapter extends PagerAdapter {
             categoryView = new EmojiCategoryView(mContext);
         }
         categoryView.setOnItemClickListener(mOnItemClickListener);
+        categoryView.setOnItemLongClickListener(mOnItemLongClickListener);
         categoryView.setOnDeleteClickListener(mOnDeleteClickListener);
         categoryView.bind(category);
         container.addView(categoryView);
@@ -83,6 +86,10 @@ public class EmojiPagerAdapter extends PagerAdapter {
 
     public void setOnItemClickListener(EmojiCategoryView.ContentAdapter.OnItemClickListener listener) {
         mOnItemClickListener = listener;
+    }
+
+    public void setOnItemLongClickListener(EmojiCategoryView.ContentAdapter.OnItemLongClickListener listener) {
+        mOnItemLongClickListener = listener;
     }
 
     public void setOnDeleteClickListener(View.OnClickListener listener) {

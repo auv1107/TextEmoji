@@ -383,6 +383,22 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
             }
         });
 
+        mEmojiPagerAdapter.setOnItemLongClickListener(new EmojiCategoryView.ContentAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(View view, final Emoji emoji) {
+                AlertDialog dialog = new AlertDialog.Builder(getContext())
+                        .setItems(new String[]{getString(R.string.search_emoji, emoji.emoji)}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mPresenter.startSearch(emoji.emoji);
+                            }
+                        })
+                        .create();
+                dialog.show();
+                return true;
+            }
+        });
+
         mEmojiPagerAdapter.setOnDeleteClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -639,6 +655,28 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mGifs[0].setVisibility(View.GONE);
         mGifs[1].setVisibility(View.GONE);
         mGifs[2].setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showUseTenorSourceDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.use_tenor_source)
+                .setMessage(R.string.use_tenor_source_info)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mGifSourceSpinner.setSelection(1);
+                        mPresenter.useGifSource(1);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
     }
 
     /**

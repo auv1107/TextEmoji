@@ -219,4 +219,13 @@ public class EmojiPresenter implements EmojiContract.Presenter, LoaderManager.Lo
         mContractManager.useGifDataSource(source);
         mGifSource = source;
     }
+
+    @Override
+    public void startSearch(String text) {
+        if (mGifSource != 1) {
+            mEmojiView.showUseTenorSourceDialog();
+        } else {
+            mContractManager.startSearch(text);
+        }
+    }
 }

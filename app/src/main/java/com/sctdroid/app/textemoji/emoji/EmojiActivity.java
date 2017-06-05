@@ -1,5 +1,6 @@
 package com.sctdroid.app.textemoji.emoji;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -175,5 +176,13 @@ public class EmojiActivity extends AppCompatActivity implements EmojiContract.Co
         }
         SharePreferencesUtils.apply(this, KEY_GIF_SORUCE, source);
         mGifRepository.updateRemoteDataSource(dataSource);
+    }
+
+    @Override
+    public void startSearch(String text) {
+        Bundle appSearchData = new Bundle();
+        appSearchData.putString(SearchManager.QUERY, text);
+
+        triggerSearch(text, appSearchData);
     }
 }

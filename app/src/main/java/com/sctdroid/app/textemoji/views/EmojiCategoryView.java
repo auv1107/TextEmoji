@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -74,6 +75,10 @@ public class EmojiCategoryView extends RelativeLayout {
         });
     }
 
+    public void setOnItemLongClickListener(ContentAdapter.OnItemLongClickListener listener) {
+        mAdapter.setOnItemLongClickListener(listener);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context mContext;
         private final TextView item_emoji;
@@ -97,6 +102,7 @@ public class EmojiCategoryView extends RelativeLayout {
         private List<Emoji> mData = new ArrayList<>();
 
         private OnItemClickListener mOnItemClickListener;
+        private OnItemLongClickListener mOnItemLongClickListener;
 
         public ContentAdapter(Context context) {
             super();
@@ -117,6 +123,14 @@ public class EmojiCategoryView extends RelativeLayout {
                     @Override
                     public void onClick(View v) {
                         mOnItemClickListener.onItemClicked(v, emoji);
+                    }
+                });
+            }
+            if (mOnItemLongClickListener != null) {
+                holder.itemView.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        return mOnItemLongClickListener.onItemLongClicked(v, emoji);
                     }
                 });
             }
@@ -146,8 +160,15 @@ public class EmojiCategoryView extends RelativeLayout {
             mOnItemClickListener = listener;
         }
 
+        public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+            mOnItemLongClickListener = listener;
+        }
+
         public interface OnItemClickListener {
             void onItemClicked(View view, Emoji emoji);
+        }
+        public interface OnItemLongClickListener {
+            boolean onItemLongClicked(View view, Emoji emoji);
         }
     }
 }
