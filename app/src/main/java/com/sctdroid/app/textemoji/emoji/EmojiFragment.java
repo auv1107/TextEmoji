@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +21,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +32,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -514,9 +518,24 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
                 mOptions.setVisibility(View.GONE);
                 mEmojiTager.setVisibility(View.VISIBLE);
                 mEmojiButton.setImageResource(R.drawable.option_keyboard);
+
+                if (SharePreferencesUtils.getBoolean(getContext(), Constants.KEY_IS_FIRST_SEE_EMOJI, true)) {
+                    SharePreferencesUtils.apply(getContext(), Constants.KEY_IS_FIRST_SEE_EMOJI, false);
+                    showLongPressEmojiTip();
+                }
                 break;
         }
         clearGifs();
+    }
+
+    private void showLongPressEmojiTip() {
+        PopupWindow popupWindow = new PopupWindow(getContext());
+        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setContentView(LayoutInflater.from(getContext()).inflate(R.layout.layout_bubble, null));
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.showAsDropDown(mTextInputEditText, 0, 30, Gravity.CENTER_HORIZONTAL);
     }
 
     /**

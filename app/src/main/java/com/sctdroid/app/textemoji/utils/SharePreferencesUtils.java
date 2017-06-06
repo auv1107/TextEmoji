@@ -48,6 +48,11 @@ public class SharePreferencesUtils {
         sp.edit().putInt(key, value).apply();
     }
 
+    public static void apply(Context context, @NonNull String key, boolean value) {
+        SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        sp.edit().putBoolean(key, value).apply();
+    }
+
     public static int getInt(Context context, @NonNull String key) {
         return getInt(context, key, 0);
     }
@@ -55,5 +60,14 @@ public class SharePreferencesUtils {
     public static int getInt(Context context, @NonNull String key, int defValue) {
         SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         return sp.getInt(key, defValue);
+    }
+
+    public static boolean getBoolean(Context context, @NonNull String key) {
+        return getBoolean(context, key, false);
+    }
+
+    public static boolean getBoolean(Context context, @NonNull String key, boolean defValue) {
+        SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        return sp.getBoolean(key, defValue);
     }
 }

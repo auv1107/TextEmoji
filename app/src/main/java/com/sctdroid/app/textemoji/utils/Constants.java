@@ -53,4 +53,6 @@ public class Constants {
     public static final String KEY_GIF_SORUCE = "KEY_GIF_SORUCE";
     public static final int GIF_SORUCE_SOOGIF = 0;
     public static final int GIF_SORUCE_TENOR = 1;
+
+    public static final String KEY_IS_FIRST_SEE_EMOJI = "KEY_IS_FIRST_SEE_EMOJI";
 }

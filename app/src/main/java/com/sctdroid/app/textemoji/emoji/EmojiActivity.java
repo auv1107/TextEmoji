@@ -104,6 +104,7 @@ public class EmojiActivity extends AppCompatActivity implements EmojiContract.Co
         GifsLoader gifsLoader = new GifsLoader(this, mGifRepository);
         mEmojiPresenter = new EmojiPresenter(emojiLoader, meLoader, chatsLoader, gifsLoader, getSupportLoaderManager(), repository, mGifRepository, mEmojiFragment, this);
         mEmojiPresenter.isFirstTime(isFirstTimeStart);
+        mEmojiPresenter.useGifSource(source);
 
         if (isFirstTimeStart) {
             viewPictures();
