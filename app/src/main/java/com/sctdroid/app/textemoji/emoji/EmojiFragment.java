@@ -217,6 +217,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         mGifs[2] = (ImageView) root.findViewById(R.id.gif2);
 
         mShareDialog = new ShareDialog(getContext());
+        mShareDialog.setEmojiAddButtonVisible(false);
 
         mGifSourceSpinner = (Spinner) root.findViewById(R.id.gif_source_spinner);
     }

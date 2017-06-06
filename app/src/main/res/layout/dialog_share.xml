@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
+    android:clipToPadding="false"
     android:background="@color/white">
     <FrameLayout
         android:id="@+id/image"
@@ -71,5 +72,17 @@
             />
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/add_emoji"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+
+        android:background="@drawable/circle"
+        android:src="@drawable/ic_emoji_add"
+        android:padding="4dp"
+        />
 
 </RelativeLayout>

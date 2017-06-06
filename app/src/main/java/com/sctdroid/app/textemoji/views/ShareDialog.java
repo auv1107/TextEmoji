@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,9 +31,11 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
     private ImageView mShareWx;
     private ImageView mShareOther;
     private ImageView mShareQQ;
+    private ImageView mAddEmoji;
     private Shareable mShareable;
 
     private boolean mGifReady = false;
+    private boolean mShowEmojiAddButton = false;
 
     public ShareDialog(@NonNull Context context) {
         super(context);
@@ -48,17 +52,26 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
         mShareWx = (ImageView) findViewById(R.id.share_wx);
         mShareQQ = (ImageView) findViewById(R.id.share_qq);
         mShareOther = (ImageView) findViewById(R.id.share_other);
+        mAddEmoji = (ImageView) findViewById(R.id.add_emoji);
 
         mShareWx.setOnClickListener(this);
         mShareQQ.setOnClickListener(this);
         mShareOther.setOnClickListener(this);
+        mAddEmoji.setOnClickListener(this);
 
         mGifReady = false;
+    }
+
+    public void setEmojiAddButtonVisible(boolean visible) {
+        mShowEmojiAddButton = visible;
     }
 
     @Override
     public void show() {
         super.show();
+
+        mAddEmoji.setVisibility(mShowEmojiAddButton ? View.VISIBLE : View.GONE);
+
         if (mShareable.isBitmap()) {
             mItemRaw.setImageBitmap(mShareable.getBitmap());
             mItemPlaceHolder.setVisibility(View.GONE);
@@ -97,20 +110,36 @@ public class ShareDialog extends Dialog implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.share_wx:
+                share(ShareUtils.SharePlatform.WECHAT);
+                break;
+            case R.id.share_qq:
+                share(ShareUtils.SharePlatform.QQ);
+                break;
+            case R.id.share_other:
+                share(ShareUtils.SharePlatform.OTHERS);
+                break;
+            case R.id.add_emoji:
+                sendToChat();
+                break;
+        }
+    }
+
+    private void share(ShareUtils.SharePlatform platform) {
         if (!mShareable.isBitmap() && !mGifReady) {
             ToastUtils.show(getContext(), R.string.wait_for_gif_loading, Toast.LENGTH_SHORT);
             return;
         }
-        switch (v.getId()) {
-            case R.id.share_wx:
-                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.WECHAT);
-                break;
-            case R.id.share_qq:
-                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.QQ);
-                break;
-            case R.id.share_other:
-                ShareUtils.saveAndShare(getContext(), mShareable, ShareUtils.SharePlatform.OTHERS);
-                break;
-        }
+        ShareUtils.saveAndShare(getContext(), mShareable, platform);
+    }
+
+    private void sendToChat() {
+        ShareUtils.addToChat(getContext(), mShareable);
+        ToastUtils.show(getContext(), R.string.gif_sent, Toast.LENGTH_SHORT);
+
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_fade_out);
+        animation.setFillAfter(true);
+        mAddEmoji.startAnimation(animation);
     }
 }

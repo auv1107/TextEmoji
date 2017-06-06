@@ -2,13 +2,19 @@ package com.sctdroid.app.textemoji.businessUtils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.sctdroid.app.textemoji.R;
+import com.sctdroid.app.textemoji.data.ChatItemFactory;
+import com.sctdroid.app.textemoji.data.bean.ChatItem;
+import com.sctdroid.app.textemoji.data.bean.Gif;
+import com.sctdroid.app.textemoji.data.bean.GifChatItem;
 import com.sctdroid.app.textemoji.data.bean.Shareable;
+import com.sctdroid.app.textemoji.data.source.ChatsRepository;
 import com.sctdroid.app.textemoji.emoji.StorageHelper;
 import com.sctdroid.app.textemoji.utils.Constants;
 import com.sctdroid.app.textemoji.utils.EncoderUtils;
@@ -73,5 +79,16 @@ public class ShareUtils {
         WECHAT,
         QQ,
         OTHERS
+    }
+
+    public static void addToChat(Context context, @NonNull Shareable shareable) {
+        if (shareable instanceof Gif) {
+            Gif gif = (Gif) shareable;
+            GifChatItem chatItem = GifChatItem.Builder.newInstance()
+                    .gif(gif)
+                    .tag(shareable.getTag())
+                    .build();
+            ChatsRepository.getInstance(null, null).appendChat(chatItem);
+        }
     }
 }

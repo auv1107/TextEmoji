@@ -52,4 +52,5 @@
     <string name="use_tenor_source_info">Tenor 是国外的动图提供商。提供 30+ 语言支持，资源数量庞大。\n支持 emoji 相似表情检索。</string>
     <string name="gif">动图</string>
     <string name="try_long_press">长按试试</string>
+    <string name="gif_sent">已添加到我的表情</string>
 </resources>

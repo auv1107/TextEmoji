@@ -69,6 +69,8 @@ public class GifFragment extends Fragment implements GifContract.View {
 
         mShareDialog = new ShareDialog(getContext());
 
+        mShareDialog.setEmojiAddButtonVisible(true);
+
         mPresenter.create();
     }
 
