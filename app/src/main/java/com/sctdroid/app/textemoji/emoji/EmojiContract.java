@@ -59,6 +59,7 @@ public class EmojiContract {
 
         void showUseTenorSourceDialog();
 
+        void hideBottom();
     }
     interface ContractManager {
 

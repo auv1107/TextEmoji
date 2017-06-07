@@ -717,6 +717,14 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         dialog.show();
     }
 
+    @Override
+    public void hideBottom() {
+        if (mType != OPTION_TYPE_NONE &&
+                mType != OPTION_TYPE_KEYBOARD) {
+            optionShowType(OPTION_TYPE_NONE);
+        }
+    }
+
     /**
      * Classes for RecyclerView
      */

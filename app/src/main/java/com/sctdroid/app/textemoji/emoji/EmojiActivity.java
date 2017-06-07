@@ -121,6 +121,7 @@ public class EmojiActivity extends AppCompatActivity implements EmojiContract.Co
             public void onClick(View v) {
                 /*Intent intent = new Intent(EmojiActivity.this, DiscoveryActivity.class);
                 startActivity(intent);*/
+                mEmojiFragment.hideBottom();
                 onSearchRequested();
             }
         });
