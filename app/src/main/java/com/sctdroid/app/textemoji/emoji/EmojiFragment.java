@@ -38,6 +38,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.feedback.FeedbackAgent;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sctdroid.app.textemoji.R;
@@ -114,6 +115,7 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
     private static final int OPTION_TYPE_EMOJI = 2;
 
     private int mType = OPTION_TYPE_NONE;
+    private FeedbackAgent mAgent;
 
 
     @Override
@@ -130,6 +132,8 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         super.onCreate(savedInstanceState);
         // init adapter here
         mAdapter = new ContentAdapter(getActivity(), this);
+        mAgent = new FeedbackAgent(getContext());
+        mAgent.sync();
     }
 
     @Nullable
@@ -465,6 +469,10 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         }
     }
 
+    private void enterFeedback() {
+        mAgent.startDefaultThreadActivity();
+    }
+
     private void initRecyclerView(View root) {
         mRecyclerView = (RecyclerView) root.findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -479,6 +487,12 @@ public class EmojiFragment extends Fragment implements EmojiContract.View, BaseE
         ImageView right_option = (ImageView) root.findViewById(R.id.right_option);
         title.setText(R.string.string_emoji);
         left_option.setVisibility(View.GONE);
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterFeedback();
+            }
+        });
     }
 
     private void optionShowType(int type) {

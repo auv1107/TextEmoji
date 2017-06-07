@@ -51,10 +51,18 @@ android {
         flavor.manifestPlaceholders.put('TENOR_API_KEY', project.hasProperty("TENOR_API_KEY") ? TENOR_API_KEY : System.getenv("TENOR_API_KEY"))
         flavor.manifestPlaceholders.put('SOOGIF_SALT', project.hasProperty("SOOGIF_SALT") ? SOOGIF_SALT : System.getenv("SOOGIF_SALT"))
     }
+
+    packagingOptions{
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
-    compile fileTree(excludes: ['GP_*.jar', 'TalkingData*.jar'], include: ['*.jar'], dir: 'libs')
+    compile fileTree(include: ['*.jar'], excludes: ['GP_*.jar', 'TalkingData*.jar'], dir: 'libs')
     googleplayCompile files('libs/GP_TalkingData_Analytics_Android_SDK_V2.2.37.jar')
     yingyongbaoCompile files('libs/TalkingData_AppAnalytics_Android_SDK_V2.3.62.jar')
     _360Compile files('libs/TalkingData_AppAnalytics_Android_SDK_V2.3.62.jar')
@@ -70,4 +78,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile ('cn.leancloud.android:avoscloud-feedback:v4.1.0@aar')
+    compile ('cn.leancloud.android:avoscloud-sdk:v4.1.0')
 }
